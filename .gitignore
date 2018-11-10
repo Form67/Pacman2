@@ -19,3 +19,7 @@
 
 # Unity3D Generated File On Crash Reports
 sysinfo.txt
+
+\.vs/Pacman2/v15/Server/sqlite3/db\.lock
+
+\.vs/Pacman2/v15/Server/sqlite3/storage\.ide
