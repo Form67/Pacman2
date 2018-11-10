@@ -251,7 +251,7 @@ public class mapGenerator : MonoBehaviour {
 	public void ResetGame(){
 		GameObject currLevel = GameObject.FindGameObjectWithTag ("level");
 		if (currLevel != null) {
-			string path = "Assets/highscore.txt";
+			string path = "Assets/TextFiles/highscore.txt";
 			StreamWriter wr = new StreamWriter(path);
 			wr.Write(GameObject.FindGameObjectWithTag("pacman").GetComponent<MainCharacterMovement>().score);
 			wr.Close();
@@ -264,7 +264,7 @@ public class mapGenerator : MonoBehaviour {
 		GameObject currLevel = GameObject.FindGameObjectWithTag ("level");
 		GameObject pacmanSpawned = GameObject.FindGameObjectWithTag ("pacman");
 		MainCharacterMovement pacmanScript = pacmanSpawned.GetComponent<MainCharacterMovement> ();
-        string path = "Assets/highscore.txt";
+        string path = "Assets/TextFiles/highscore.txt";
         StreamWriter wr = new StreamWriter(path);
         wr.Write(GameObject.FindGameObjectWithTag("pacman").GetComponent<MainCharacterMovement>().score);
         wr.Close();
