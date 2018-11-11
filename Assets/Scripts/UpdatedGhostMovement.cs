@@ -42,17 +42,22 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 	void Update () {
 		switch (currentState) {
 		case State.CHASE:
-			
+			DetermineTargetForChase ();
+			//A* to targetPoint
 			break;
 		case State.FRIGHTENED:
 
 			break;
 		case State.SCATTER:
-
+			GetScatterTarget ();
 			break;
 		default:
 			break;
 		}
+	}
+
+	public void SetTargetPointPoint (Point point){
+		targetPoint = point;
 	}
 
 	abstract protected void DetermineTargetForChase ();
