@@ -101,6 +101,8 @@ public class MainCharacterMovement : MonoBehaviour {
     {
         if (collision.gameObject.tag == "ghost")
         {
+            GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
+
             string path = "Assets/TextFiles/highscore.txt";
             StreamWriter wr = new StreamWriter(path);
             wr.Write(highScore);
