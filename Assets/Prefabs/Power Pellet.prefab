@@ -22,6 +22,7 @@ GameObject:
   - component: {fileID: 212903282647876868}
   - component: {fileID: 61196867185651850}
   - component: {fileID: 50008897192524590}
+  - component: {fileID: 95342565073618936}
   m_Layer: 0
   m_Name: Power Pellet
   m_TagString: Pellet
@@ -87,6 +88,24 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.03, y: 0.03}
   m_EdgeRadius: 0
+--- !u!95 &95342565073618936
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1680110490701566}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 560920447ea42264fa87b1fd190cfe9c, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!212 &212903282647876868
 SpriteRenderer:
   m_ObjectHideFlags: 1
