@@ -58,6 +58,8 @@ MonoBehaviour:
   wall: {fileID: 1210826229984992, guid: 8effe760d35e0cb4cb33f6cf90030960, type: 2}
   emptyCell: {fileID: 1815430093505684, guid: d91ecbe4b7a16be4096233b0b6d53d66, type: 2}
   pellet: {fileID: 1456116598489122, guid: 82d3a7feb6e9e6a4fb2ccc61c9c2c834, type: 2}
+  powerPellet: {fileID: 1680110490701566, guid: 00c2b2e259156eb4f88bb205ca5d1d22,
+    type: 2}
   pacman: {fileID: 1712073431895706, guid: d30a00ceab18be240b46bc227fcd7ff7, type: 2}
   blinky: {fileID: 1390253288826638, guid: 1664c6705e4320142bac79803c8b4ca1, type: 2}
   inky: {fileID: 1354036740339576, guid: fb555346b96e01a48b4654ad1b625ea2, type: 2}
