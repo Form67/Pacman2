@@ -8,7 +8,7 @@ public class mapGenerator : MonoBehaviour {
 
 	public string filePath;
 	public float cellSize;
-	List<GameObject[]> board;
+	public List<GameObject[]> board;
 	List<string[]> tileTypes;
 	public float topLeftX;
 	public float topLeftY;
@@ -27,8 +27,16 @@ public class mapGenerator : MonoBehaviour {
 	private List<string> wallTypes;
 	private bool started = false;
 	public GameObject level;
-	// Use this for initialization
-	void Begin () {
+
+    PathFinding path;
+
+    void Start()
+    {
+         path = FindObjectOfType<PathFinding>();
+    }
+
+    // Use this for initialization
+    void Begin () {
 		GameObject currLevel = Instantiate (level);
 		StreamReader inp_strm = new StreamReader (filePath);
 		started = true;
@@ -99,6 +107,8 @@ public class mapGenerator : MonoBehaviour {
         /**/
         OrientWalls ();
 
+        // Send new board to pathfinding algo
+        path.InitGraph(new List<GameObject[]>(board));
 	}
 	
 	// Update is called once per frame
