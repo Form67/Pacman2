@@ -6,7 +6,7 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 
 
 	[System.Serializable]
-	protected enum State {
+	public enum State {
 		DEFAULT,
 		CHASE,
 		SCATTER,
@@ -56,7 +56,7 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 		}
 	}
 
-	public void SetTargetPointPoint (Point point){
+	protected void SetTargetPointPoint (Point point){
 		targetPoint = point;
 	}
 
