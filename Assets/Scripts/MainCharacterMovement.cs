@@ -21,7 +21,7 @@ public class MainCharacterMovement : MonoBehaviour {
         scoreText2 = GameObject.FindGameObjectWithTag("scoreText2").GetComponent<Text>();
         score = 0;
         GetComponent<CircleCollider2D>().enabled = true;
-        string path = "Assets/highscore.txt";
+        string path = "Assets/TextFiles/highscore.txt";
         StreamReader reader = new StreamReader(path);
         highScore = int.Parse(reader.ReadToEnd());
         scoreText2.text = "Highscore: " +highScore;
@@ -101,7 +101,7 @@ public class MainCharacterMovement : MonoBehaviour {
     {
         if (collision.gameObject.tag == "ghost")
         {
-            string path = "Assets/highscore.txt";
+            string path = "Assets/TextFiles/highscore.txt";
             StreamWriter wr = new StreamWriter(path);
             wr.Write(highScore);
             wr.Close();
