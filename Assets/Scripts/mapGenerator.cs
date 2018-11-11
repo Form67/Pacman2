@@ -39,6 +39,7 @@ public class mapGenerator : MonoBehaviour {
 		wallTypes.Add ("HT");
 		wallTypes.Add ("HB");
 		wallTypes.Add ("W");
+		wallTypes.Add ("G");
 		int boardHeight = 0;
 		while (!inp_strm.EndOfStream) {
 			string line = inp_strm.ReadLine ();
@@ -46,12 +47,15 @@ public class mapGenerator : MonoBehaviour {
 			tileTypes.Add (new string[line.Length]);
 			for (int i = 0; i < line.Length; ++i) {
 				char c = line [i];
+				tileTypes [boardHeight] [i] = ".";
 				if (c == 'W') {
 					board [boardHeight] [i] = Instantiate (wall, currLevel.transform);
+					tileTypes [boardHeight] [i] = "W";
 				} else if (c == 'G') {
 					board [boardHeight] [i] = Instantiate (wall, currLevel.transform);
-					CellScript cellScript = board [boardHeight] [i].GetComponent<CellScript> ();
-					cellScript.SetSprite (14);
+					//CellScript cellScript = board [boardHeight] [i].GetComponent<CellScript> ();
+					//cellScript.SetSprite (14);
+					tileTypes[boardHeight][i] = "G";
 				} else if (c == '.') {
 					board [boardHeight] [i] = Instantiate (emptyCell, currLevel.transform);
 					GameObject pelletSpawned = Instantiate (pellet, currLevel.transform);
@@ -80,7 +84,8 @@ public class mapGenerator : MonoBehaviour {
 					pacmanSpawned.transform.position = new Vector3 (topLeftX + cellSize * i, topLeftY - cellSize * boardHeight);
 				} 
 				board [boardHeight] [i].transform.position = new Vector3 (topLeftX + cellSize * i, topLeftY - cellSize * boardHeight);
-				tileTypes [boardHeight] [i] = c == 'W' || c == 'G' ? "W" : ".";
+
+
 			}
 			boardHeight++;
 		}
@@ -122,7 +127,8 @@ public class mapGenerator : MonoBehaviour {
 							tileTypes [i] [j] = "VL";
 							continue;
 						}
-					} if (j > 0 && j < board [i].Length - 1 && wallTypes.Contains (tileTypes [i] [j - 1]) && wallTypes.Contains (tileTypes [i] [j + 1])) {
+					}
+					if (j > 0 && j < board [i].Length - 1 && wallTypes.Contains (tileTypes [i] [j - 1]) && wallTypes.Contains (tileTypes [i] [j + 1])) {
 						if (i > 0 && !wallTypes.Contains (tileTypes [i - 1] [j])) {
 							//Set tile to 14
 							cellScript.SetSprite (14);
@@ -138,6 +144,21 @@ public class mapGenerator : MonoBehaviour {
 					}
 					uncheckedY.Add (i);
 					uncheckedX.Add (j);
+				} else if (tileTypes[i] [j] == "G" && board [i] [j].tag == "wall") {
+					CellScript cellScript = board [i] [j].GetComponent<CellScript> ();
+					if (i > 0 && j > 0 && tileTypes [i - 1] [j] == "G" && tileTypes [i] [j - 1] == "G") {
+						cellScript.SetSprite (30);
+					} else if (i > 0 && j < board [i].Length - 1 && tileTypes [i - 1] [j] == "G" && tileTypes [i] [j + 1] == "G") {
+						cellScript.SetSprite (31);
+					} else if (i < board.Count - 1 && j < board [i].Length - 1 && tileTypes [i + 1] [j] == "G" && tileTypes [i] [j + 1] == "G") {
+						cellScript.SetSprite (29);
+					} else if (i < board.Count - 1 && j > 0 && tileTypes [i + 1] [j] == "G" && tileTypes [i] [j - 1] == "G") {
+						cellScript.SetSprite (28);
+					} else if (i > 0 && tileTypes [i - 1] [j] == "G") {
+						cellScript.SetSprite (2);
+					} else {
+						cellScript.SetSprite (10);
+					}
 				}
 
 			}
