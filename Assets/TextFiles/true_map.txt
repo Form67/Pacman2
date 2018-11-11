@@ -1,7 +1,7 @@
 WWWWWWWWWWWWWWWWWWWWWWWWWWWW
 W............WW............W
 W.WWWW.WWWWW.WW.WWWWW.WWWW.W
-W.W  W.W   W.WW.W   W.W  W.W
+WEW  W.W   W.WW.W   W.W  WEW
 W.WWWW.WWWWW.WW.WWWWW.WWWW.W
 W..........................W
 W.WWWW.WW.WWWWWWWW.WW.WWWW.W
@@ -9,19 +9,19 @@ W.WWWW.WW.WWWWWWWW.WW.WWWW.W
 W......WW....WW....WW......W
 WWWWWW.WWWWW WW WWWWW.WWWWWW
      W.WWWWW WW WWWWW.W     
-     W.WW   CIBP   WW.W     
-     W.WW WWG  GWW WW.W     
-     W.WW W      W WW.W     
-     W.   W      W   .W     
-     W.WW W      W WW.W     
-     W.WW WWWWWWWW WW.W     
+     W.WW    B     WW.W     
+     W.WW GGG  GGG WW.W     
+     W.WW G      G WW.W     
+     W.   GI P C G   .W     
+     W.WW G      G WW.W     
+     W.WW GGGGGGGG WW.W     
      W.WW    M     WW.W     
      W.WW WWWWWWWW WW.W     
 WWWWWW.WW WWWWWWWW WW.WWWWWW
 W............WW............W
 W.WWWW.WWWWW.WW.WWWWW.WWWW.W
 W.WWWW.WWWWW.WW.WWWWW.WWWW.W
-W...WW.......  .......WW...W
+WE..WW.......  .......WW..EW
 WWW.WW.WW.WWWWWWWW.WW.WW.WWW
 WWW.WW.WW.WWWWWWWW.WW.WW.WWW
 W......WW....WW....WW......W
