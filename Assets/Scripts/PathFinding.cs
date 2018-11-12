@@ -14,7 +14,7 @@ public class PathFinding : MonoBehaviour {
     }
 
     // Intialize our graph
-    public void InitGraph(List<GameObject[]> board)
+    public void InitGraph(List<GameObject[]> board) 
     {
         int rowLength = board[0].Length;
 
@@ -141,5 +141,29 @@ public class PathFinding : MonoBehaviour {
     {
         return x >= 0 && x < numRows 
             && y >= 0 && y < numCols;
+    }
+
+
+    // Maps world position to the closest node in the grid
+    Node WorldPosToNode(Vector3 pos)
+    {
+        Node closest = grid[0][0];
+        float closestDist = Vector3.Distance(pos, grid[0][0].pos);
+
+        for (int x = 0; x < numRows; x++)
+        {
+            for (int y = 0; y < numCols; y++)
+            {
+
+                float dist = Vector3.Distance(pos, grid[0][0].pos);
+                if (dist < closestDist)
+                {
+                    closest = grid[x][y];
+                    closestDist = dist;
+                }
+            }
+        }
+
+        return closest;
     }
 }
