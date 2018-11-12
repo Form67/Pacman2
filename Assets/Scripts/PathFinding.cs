@@ -33,6 +33,7 @@ public class PathFinding : MonoBehaviour {
 
         while(openList.Count > 0)
         {
+
             // Find the node in open list that has the lowest fScore
             Node currentNode = openList[0];
             for(int i = 1; i < openList.Count; i++)
@@ -45,10 +46,11 @@ public class PathFinding : MonoBehaviour {
             }
             
             // Check if target was reached
-            if (currentNode == target)
+            if (currentNode.Equals(target))
             {
                 return ConstructPath(start, target);
             }
+
 
             // Adjust lists now that we found the right node 
             openList.Remove(currentNode);
@@ -68,11 +70,14 @@ public class PathFinding : MonoBehaviour {
 
                 // Just visited a new node
                 if (!openList.Contains(neighbor))
+                {
                     openList.Add(neighbor);
+                }
 
                 // Path is not better
                 else if (cost >= neighbor.gCost)
                     continue;
+                
 
                 // Path is better
                 neighbor.gCost = cost;
@@ -91,12 +96,15 @@ public class PathFinding : MonoBehaviour {
         List<Node> path = new List<Node>();
         Node currentNode = target;
 
-        do
+        while (!currentNode.Equals(start))
         {
             path.Add(currentNode);
-        } while (currentNode != start);
+            currentNode = currentNode.parent;
+        }
+        path.Add(currentNode);  // add the start node
 
         path.Reverse();
+        print(path.Count);
 
         return path;
     }
@@ -150,7 +158,7 @@ public class PathFinding : MonoBehaviour {
             for (int y = 0; y < numCols; y++)
             {
                 float dist = Vector3.Distance(pos, grid[x][y].pos);
-                if (dist < closestDist && grid[x][y].isWall == false)
+                if (dist < closestDist && !grid[x][y].isWall)
                 {
                     closest = grid[x][y];
                     closestDist = dist;
