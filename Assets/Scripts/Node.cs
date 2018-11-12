@@ -29,4 +29,28 @@ public class Node : MonoBehaviour {
         else
             this.isWall = false;
     }
+
+    public override bool Equals(System.Object obj)
+    {
+        if (obj == null)
+            return false;
+        Node n = obj as Node;
+        if ((System.Object)n == null)
+            return false;
+        return this.pos == n.pos;
+    }
+
+    public override int GetHashCode()
+    {
+        return this.pos.GetHashCode();
+    }
+
+    public bool Equals(Node n)
+    {
+        if ((object)n == null)
+            return false;
+        return this.pos == n.pos;
+    }
+
+
 }
