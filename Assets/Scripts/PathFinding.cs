@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class PathFinding : MonoBehaviour {
     public List<Node[]> grid;
-    int numRows { get { return grid[0].Length; } }
-    int numCols { get { return grid.Count; } }
+    int numRows { get { return grid.Count; } }
+    int numCols { get { return grid[0].Length; } }
 
     // Use this for initialization
     private void Awake()
