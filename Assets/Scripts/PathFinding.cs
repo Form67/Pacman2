@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class PathFinding : MonoBehaviour {
     public List<Node[]> grid;
-    int numRows { get { return grid[0].Length; } }
-    int numCols { get { return grid.Count; } }
+    int numRows { get { return grid.Count; } }
+    int numCols { get { return grid[0].Length; } }
 
     // Use this for initialization
     private void Awake()
@@ -29,7 +29,7 @@ public class PathFinding : MonoBehaviour {
     }
 
     // A-Star path finding algorithm
-    List<Node> AStar(Node start, Node target)
+    public List<Node> AStar(Node start, Node target)
     {
         List<Node> openList = new List<Node>();   // List of discovered nodes that haven't been evaluated yet
         List<Node> closedList = new List<Node>(); // List of nodes that have already been evaluated
@@ -145,7 +145,7 @@ public class PathFinding : MonoBehaviour {
 
 
     // Maps world position to the closest node in the grid
-    Node WorldPosToNode(Vector3 pos)
+    public Node WorldPosToNode(Vector3 pos)
     {
         Node closest = grid[0][0];
         float closestDist = Vector3.Distance(pos, grid[0][0].pos);
