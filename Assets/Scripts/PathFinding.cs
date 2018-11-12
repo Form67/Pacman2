@@ -6,16 +6,11 @@ public class PathFinding : MonoBehaviour {
     public List<Node[]> grid;
     int numRows { get { return grid.Count; } }
     int numCols { get { return grid[0].Length; } }
-
-    // Use this for initialization
-    private void Awake()
+    
+    // Intialize our graph
+    public void InitGraph(List<GameObject[]> board)
     {
         grid = new List<Node[]>();
-    }
-
-    // Intialize our graph
-    public void InitGraph(List<GameObject[]> board) 
-    {
         int rowLength = board[0].Length;
 
         for(int x = 0; x < board.Count; x++)
