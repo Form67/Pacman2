@@ -154,8 +154,7 @@ public class PathFinding : MonoBehaviour {
         {
             for (int y = 0; y < numCols; y++)
             {
-
-                float dist = Vector3.Distance(pos, grid[0][0].pos);
+                float dist = Vector3.Distance(pos, grid[x][y].pos);
                 if (dist < closestDist)
                 {
                     closest = grid[x][y];
