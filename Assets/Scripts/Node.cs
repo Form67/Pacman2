@@ -23,8 +23,8 @@ public class Node : MonoBehaviour {
         this.gridX = gridX;
         this.gridY = gridY;
         this.pos = tileObj.transform.position;
-
-        if (tileObj.tag == "Wall")
+        
+        if (tileObj.tag == "wall")
             this.isWall = true;
         else
             this.isWall = false;

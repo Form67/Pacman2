@@ -104,8 +104,6 @@ public class PathFinding : MonoBehaviour {
         path.Add(currentNode);  // add the start node
 
         path.Reverse();
-        print(path.Count);
-
         return path;
     }
 
