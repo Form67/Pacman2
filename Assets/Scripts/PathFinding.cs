@@ -6,16 +6,11 @@ public class PathFinding : MonoBehaviour {
     public List<Node[]> grid;
     int numRows { get { return grid.Count; } }
     int numCols { get { return grid[0].Length; } }
-
-    // Use this for initialization
-    private void Awake()
+    
+    // Intialize our graph
+    public void InitGraph(List<GameObject[]> board)
     {
         grid = new List<Node[]>();
-    }
-
-    // Intialize our graph
-    public void InitGraph(List<GameObject[]> board) 
-    {
         int rowLength = board[0].Length;
 
         for(int x = 0; x < board.Count; x++)
@@ -155,7 +150,7 @@ public class PathFinding : MonoBehaviour {
             for (int y = 0; y < numCols; y++)
             {
                 float dist = Vector3.Distance(pos, grid[x][y].pos);
-                if (dist < closestDist)
+                if (dist < closestDist && grid[x][y].isWall == false)
                 {
                     closest = grid[x][y];
                     closestDist = dist;
