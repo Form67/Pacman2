@@ -8,15 +8,39 @@ public class Ghostmovement : MonoBehaviour {
     public float speed;
     public Animator an;
     public bool cooldown;
+
+    public MainCharacterMovement pacman;
+
 	// Use this for initialization
 	void Start () {
         rb = GetComponent<Rigidbody2D>();
         cooldown = false;
         an = GetComponent<Animator>();
+
+        pacman = FindObjectOfType<MainCharacterMovement>();
 	}
 	
 	// Update is called once per frame
 	void Update () {
+
+        // Check if pacman is invincible
+        if (pacman.isInvincible)
+        {
+            if(pacman.invincibleTimer < 1.5f)
+            {
+                an.SetBool("flash", true);
+            }
+            else
+            {
+                an.SetTrigger("blue");
+            }
+        }
+        else
+        {
+            an.SetBool("flash", false);
+        }
+        
+
         if (Mathf.Abs(rb.velocity.x) < .1f && Mathf.Abs(rb.velocity.y) < .1f) {
             if (goingHorizontal)
             {
