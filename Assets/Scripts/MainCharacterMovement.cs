@@ -14,6 +14,14 @@ public class MainCharacterMovement : MonoBehaviour {
     public int highScore;
     public Text scoreText;
     public Text scoreText2;
+
+    public float invDurationPerPellet;
+    [HideInInspector]
+    public float invincibleTimer = 0f;
+    public bool isInvincible = false;
+
+    int ghostScore = 100;
+
     // Use this for initialization
     void Start () {
         dead = false;
@@ -38,6 +46,19 @@ public class MainCharacterMovement : MonoBehaviour {
         }
         if (!dead)
         {
+            // Power pellets
+            if(isInvincible)
+            {
+                invincibleTimer -= Time.deltaTime;
+
+                if (invincibleTimer <= 0)
+                {
+                    isInvincible = false;
+                    invincibleTimer = 0;
+                    ghostScore = 100;
+                }
+            }
+
             //input
             if (Input.GetKeyDown(KeyCode.R))
             {
@@ -89,27 +110,46 @@ public class MainCharacterMovement : MonoBehaviour {
             }
         }
     }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.tag == "Pellet")
         {
             score++;
+
+            if (collision.gameObject.name.Contains("Power"))
+            {
+                isInvincible = true;
+                invincibleTimer += invDurationPerPellet;   // power pellets stack
+            }
+
             Destroy(collision.gameObject);
+
         }
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.tag == "ghost")
         {
-            GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
 
-            string path = "Assets/TextFiles/highscore.txt";
-            StreamWriter wr = new StreamWriter(path);
-            wr.Write(highScore);
-            wr.Close();
-            dead = true;
-            GetComponent<Animator>().SetBool("Dead", true);
-            GetComponent<CircleCollider2D>().enabled = false;
+            if (isInvincible)
+            {
+                // do invincible behavior
+                score += ghostScore;
+                ghostScore *= 2;
+            }
+            else
+            {
+                GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
+
+                string path = "Assets/TextFiles/highscore.txt";
+                StreamWriter wr = new StreamWriter(path);
+                wr.Write(highScore);
+                wr.Close();
+                dead = true;
+                GetComponent<Animator>().SetBool("Dead", true);
+                GetComponent<CircleCollider2D>().enabled = false;
+            }
         }
     }
 }
