@@ -7,15 +7,22 @@ using System.IO;
 
 public class MainCharacterMovement : MonoBehaviour {
     public float velocity;
-    public int direction;
     public float currVelocity;
     public bool dead;
     public int score;
     public int highScore;
     public Text scoreText;
     public Text scoreText2;
+    public enum Dir { up, down, left, right };
+    public Dir direction;
+    public float lerpCycle;
     // Use this for initialization
     void Start () {
+        //new code
+    
+
+
+        //old code
         dead = false;
         scoreText = GameObject.FindGameObjectWithTag("scoreText").GetComponent<Text>();
         scoreText2 = GameObject.FindGameObjectWithTag("scoreText2").GetComponent<Text>();
@@ -31,6 +38,15 @@ public class MainCharacterMovement : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
+        //new code
+
+        lerpCycle += Time.deltaTime;
+        if (lerpCycle >= 1f) {
+            //update grid
+        }
+
+
+/*
         scoreText.text = "Score: " + score;
         if (score > highScore) {
             highScore = score;
@@ -87,7 +103,7 @@ public class MainCharacterMovement : MonoBehaviour {
             {
                 GetComponent<Animator>().SetBool("Moving", false);
             }
-        }
+        }*/
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
