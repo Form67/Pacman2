@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+
 public class Ghostmovement : MonoBehaviour {
     public bool goingHorizontal;
     public Rigidbody2D rb;
