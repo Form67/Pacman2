@@ -23,10 +23,36 @@ public class Node : MonoBehaviour {
         this.gridX = gridX;
         this.gridY = gridY;
         this.pos = tileObj.transform.position;
-
-        if (tileObj.tag == "Wall")
+        
+        if (tileObj.tag == "wall")
             this.isWall = true;
         else
             this.isWall = false;
     }
+
+    public override bool Equals(System.Object obj)
+    {
+        if (obj == null)
+            return false;
+        Node n = obj as Node;
+        if ((System.Object)n == null)
+            return false;
+        return this.pos == n.pos;
+    }
+
+    public override int GetHashCode()
+    {
+        return this.pos.GetHashCode();
+    }
+
+    public bool Equals(Node n)
+    {
+        if ((object)n == null)
+            return false;
+        return this.pos == n.pos;
+    }
+
+
+
+
 }
