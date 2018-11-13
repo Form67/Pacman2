@@ -114,7 +114,7 @@ public class PathFinding : MonoBehaviour {
     }
 
     // Neighbors are 1 unit up, down, left, or right from the current node
-    List<Node> GetNeighbors(Node n)
+    public List<Node> GetNeighbors(Node n)
     {
         List<Node> neighbors = new List<Node>();
 
@@ -166,4 +166,15 @@ public class PathFinding : MonoBehaviour {
 
         return closest;
     }
+
+	public bool IsNodeIntersection(Node node){
+		List<Node> neighbors = GetNeighbors (node);
+		int numPathNeighbors = 0;
+		foreach (Node neighbor in neighbors) {
+			if (!neighbor.isWall) {
+				numPathNeighbors++;
+			}
+		}
+		return numPathNeighbors > 2;
+	}
 }
