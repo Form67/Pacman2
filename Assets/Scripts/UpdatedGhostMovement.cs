@@ -29,6 +29,7 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 
 	Point targetPoint;
 
+	PathFinding pathFinder;
 
 	// Use this for initialization
 	void Start () {
