@@ -22,16 +22,27 @@ public class MainCharacterMovement : MonoBehaviour {
 
     int ghostScore = 100;
 
+    mapGenerator map;
+    LivesDisplay livesDisp;
+
     // Use this for initialization
     void Start () {
+        map = FindObjectOfType<mapGenerator>();
+        livesDisp = FindObjectOfType<LivesDisplay>();
+
         dead = false;
         scoreText = GameObject.FindGameObjectWithTag("scoreText").GetComponent<Text>();
         scoreText2 = GameObject.FindGameObjectWithTag("scoreText2").GetComponent<Text>();
         score = 0;
         GetComponent<CircleCollider2D>().enabled = true;
+
         string path = "Assets/TextFiles/highscore.txt";
         StreamReader reader = new StreamReader(path);
-        highScore = int.Parse(reader.ReadToEnd());
+        string rawText = reader.ReadToEnd();
+        if (rawText.Length == 0)
+            highScore = 0;
+        else
+            highScore = int.Parse(rawText.Substring(0,1));
         scoreText2.text = "Highscore: " +highScore;
         reader.Close();
     }
@@ -140,6 +151,8 @@ public class MainCharacterMovement : MonoBehaviour {
             }
             else
             {
+                FindObjectOfType<mapGenerator>().DecLives();
+
                 GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
 
                 string path = "Assets/TextFiles/highscore.txt";

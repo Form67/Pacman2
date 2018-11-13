@@ -29,10 +29,13 @@ public class mapGenerator : MonoBehaviour {
 	public GameObject level;
 
     PathFinding path;
+    LivesDisplay livesDisp;
+    int lives = 3;
 
     void Start()
     {
-         path = FindObjectOfType<PathFinding>();
+        path = FindObjectOfType<PathFinding>();
+        livesDisp = FindObjectOfType<LivesDisplay>();
     }
 
     // Use this for initialization
@@ -95,7 +98,8 @@ public class mapGenerator : MonoBehaviour {
 					board [boardHeight] [i] = Instantiate (emptyCell, currLevel.transform);
 					GameObject pacmanSpawned = Instantiate (pacman, currLevel.transform);
 					pacmanSpawned.transform.position = new Vector3 (topLeftX + cellSize * i, topLeftY - cellSize * boardHeight);
-				} 
+
+                } 
 				board [boardHeight] [i].transform.position = new Vector3 (topLeftX + cellSize * i, topLeftY - cellSize * boardHeight);
 
 
@@ -106,6 +110,11 @@ public class mapGenerator : MonoBehaviour {
 		inp_strm.Close();
         /**/
         OrientWalls ();
+
+        if(lives == 3)
+            livesDisp.ResetLives();
+        else
+            livesDisp.SetDisplay(lives);
 
         // Send new board to pathfinding algo
         path.InitGraph(new List<GameObject[]>(board));
@@ -289,6 +298,7 @@ public class mapGenerator : MonoBehaviour {
 		if (currLevel != null) {
 			string path = "Assets/TextFiles/highscore.txt";
 			StreamWriter wr = new StreamWriter(path);
+
 			wr.Write(GameObject.FindGameObjectWithTag("pacman").GetComponent<MainCharacterMovement>().score);
 			wr.Close();
 			Destroy (currLevel);
@@ -313,7 +323,7 @@ public class mapGenerator : MonoBehaviour {
 		StreamReader inp_strm = new StreamReader (filePath);
 		int boardHeight = 0;
 
-		while (!inp_strm.EndOfStream) {
+        while (!inp_strm.EndOfStream) {
 			string line = inp_strm.ReadLine ();
 			for (int i = 0; i < line.Length; ++i) {
 				char c = line [i];
@@ -345,4 +355,15 @@ public class mapGenerator : MonoBehaviour {
 		}
 		inp_strm.Close ();
 	}
+
+
+    public void DecLives()
+    {
+        lives--;
+        // Reset
+        if(lives < 0)
+        {
+            lives = 3;
+        }
+    }
 }
