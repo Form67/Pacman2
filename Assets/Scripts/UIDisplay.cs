@@ -100,6 +100,8 @@ public class UIDisplay : MonoBehaviour {
     {
         foreach (GameObject child in lifeSprites)
             child.SetActive(true);
+
+        visibleCount = 3;
     }
 
 }
