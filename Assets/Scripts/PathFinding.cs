@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum Direction {  None, Up, Down, Left, Right }
+
 public class PathFinding : MonoBehaviour {
     public List<Node[]> grid;
     int numRows { get { return grid.Count; } }
@@ -24,7 +26,7 @@ public class PathFinding : MonoBehaviour {
     }
 
     // A-Star path finding algorithm
-    public List<Node> AStar(Node start, Node target)
+    public List<Node> AStar(Node start, Node target, Direction dir = Direction.None)
     {
         List<Node> openList = new List<Node>();   // List of discovered nodes that haven't been evaluated yet
         List<Node> closedList = new List<Node>(); // List of nodes that have already been evaluated
@@ -46,7 +48,7 @@ public class PathFinding : MonoBehaviour {
             }
             
             // Check if target was reached
-            if (currentNode.Equals(target))
+            if (start != currentNode && currentNode.Equals(target))
             {
                 return ConstructPath(start, target);
             }
@@ -59,6 +61,57 @@ public class PathFinding : MonoBehaviour {
 
             // Visit all the neighbors of the current node
             List<Node> neighbors = GetNeighbors(currentNode);
+
+            // Prioritize checking the tile the ghost is facing first
+            if(start == currentNode && dir != Direction.None)
+            {
+                if(dir == Direction.Up)
+                {
+                    // up neightbor is first
+                }
+                else if(dir == Direction.Down)
+                {
+                    Node downNeighbor = neighbors[1];
+
+                    if (IsNodeIntersection(downNeighbor))
+                        break;
+
+                    // Push to front
+                    neighbors.RemoveAt(1);
+                    neighbors.Reverse();
+                    neighbors.Add(downNeighbor);
+                    neighbors.Reverse();
+                }
+                else if (dir == Direction.Left)
+                {
+                    Node leftNeighbor = neighbors[2];
+
+                    if (IsNodeIntersection(leftNeighbor))
+                        break;
+
+                    // Push to front
+                    neighbors.RemoveAt(2);
+                    neighbors.Reverse();
+                    neighbors.Add(leftNeighbor);
+                    neighbors.Reverse();
+                }
+
+                else if (dir == Direction.Right)
+                {
+                    Node rightNeighbor = neighbors[3];
+
+                    if (IsNodeIntersection(rightNeighbor))
+                        break;
+
+                    // Push to front
+                    neighbors.RemoveAt(3);
+                    neighbors.Reverse();
+                    neighbors.Add(rightNeighbor);
+                    neighbors.Reverse();
+                }
+            }
+
+            // Check all the neighbors of the currrentNode
             foreach (Node neighbor in neighbors)
             {
                 // Ignore already evaluated neighbor
