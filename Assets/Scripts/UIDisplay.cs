@@ -88,7 +88,7 @@ public class UIDisplay : MonoBehaviour {
 
     public void IncrementScore(int inc)
     {
-        score += 2000;
+        score += inc;
 
         // Gain a extra life every 10,000 points
         if (score >= extraLifeThreshold && visibleCount < 3)
