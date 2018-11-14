@@ -32,6 +32,8 @@ public class MainCharacterMovement : MonoBehaviour {
         map = FindObjectOfType<mapGenerator>();
         ui = FindObjectOfType<UIDisplay>();
         pathFinder = GameObject.FindGameObjectWithTag("pathfinding").GetComponent<PathFinding>();
+        currentNode = pathFinder.WorldPosToNode(transform.position);
+        targetNode = currentNode;
     }
     void Start () {
         //new code
@@ -47,11 +49,63 @@ public class MainCharacterMovement : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        //new code
+        currentNode = pathFinder.WorldPosToNode(transform.position);
+        
 
-        lerpCycle += Time.deltaTime*velocity;
-        if (lerpCycle >= 1f) {
-            //update grid
+        //new code
+        if (!dead) {
+            transform.position = Vector3.Lerp(currentNode.pos, targetNode.pos, lerpCycle);
+
+
+            lerpCycle += Time.deltaTime * velocity;
+            if (targetNode != currentNode) {
+                GetComponent<Animator>().SetBool("Moving", true);
+            }
+            else {
+                GetComponent<Animator>().SetBool("Moving", false);
+            }
+            if (lerpCycle >= 1f) {
+                
+                lerpCycle = 0;
+                switch (direction) {
+                    case Dir.right:
+                        if (!pathFinder.grid[currentNode.gridX][currentNode.gridY + 1].isWall) { 
+                            targetNode = pathFinder.grid[currentNode.gridX][currentNode.gridY+1];
+                            
+                         }
+                        else {
+                            targetNode = currentNode;
+                            
+                        }
+                        break;
+                    case Dir.left:
+                        if (!pathFinder.grid[currentNode.gridX - 1][currentNode.gridY].isWall)
+                            targetNode = pathFinder.grid[currentNode.gridX - 1][currentNode.gridY];
+                        else
+                        {
+                            targetNode = currentNode;
+                        }
+                        break;
+                    case Dir.up:
+                        if (!pathFinder.grid[currentNode.gridX][currentNode.gridY - 1].isWall)
+                            targetNode = pathFinder.grid[currentNode.gridX][currentNode.gridY - 1];
+                        else
+                        {
+                            targetNode = currentNode;
+                        }
+                        break;
+                    case Dir.down:
+                        if (!pathFinder.grid[currentNode.gridX][currentNode.gridY + 1].isWall)
+                            targetNode = pathFinder.grid[currentNode.gridX][currentNode.gridY + 1];
+                        else
+                        {
+                            targetNode = currentNode;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
         }
         // Power pellets
         if (isInvincible)
@@ -65,27 +119,27 @@ public class MainCharacterMovement : MonoBehaviour {
                 ghostScore = 100;
             }
         }
-        currentNode = pathFinder.WorldPosToNode(transform.position);
-        if (pathFinder.IsNodeIntersection(currentNode)&& lerpCycle <.51f) {
-            if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
+
+        if ((pathFinder.IsNodeIntersection(currentNode)&& lerpCycle <.51f)|| currentNode == targetNode) {
+
+            if ((Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D)) && !pathFinder.grid[currentNode.gridX][currentNode.gridY+1].isWall)
             {
- 
-                currVelocity = velocity;
+                direction = Dir.right;
                 transform.rotation = Quaternion.Euler(0, 0, 0);
-            }
-            if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
+            } 
+            if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W) && !pathFinder.grid[currentNode.gridX][currentNode.gridY-1].isWall)
             {
-                currVelocity = velocity;
+                direction = Dir.up;
                 transform.rotation = Quaternion.Euler(0, 0, 90);
             }
-            if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
+            if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A) && !pathFinder.grid[currentNode.gridX - 1][currentNode.gridY].isWall)
             {
-                currVelocity = -velocity;
+                direction = Dir.left;
                 transform.rotation = Quaternion.Euler(0, 0, 180);
             }
-            if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S))
+            if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S) && !pathFinder.grid[currentNode.gridX][currentNode.gridY+1].isWall)
             {
-                currVelocity = -velocity;
+                direction = Dir.down;
                 transform.rotation = Quaternion.Euler(0, 0, 270);
             }
         }
