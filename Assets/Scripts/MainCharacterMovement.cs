@@ -24,6 +24,7 @@ public class MainCharacterMovement : MonoBehaviour {
     protected PathFinding pathFinder;
     int ghostScore = 100;
 
+    bool intersect;
     mapGenerator map;
     UIDisplay ui;
     // Use this for initialization
@@ -38,7 +39,7 @@ public class MainCharacterMovement : MonoBehaviour {
         //new code
         currentNode = pathFinder.WorldPosToNode(transform.position);
         targetNode = currentNode;
-
+        intersect = (pathFinder.IsNodeIntersection(targetNode));
 
         //old code
         dead = false;
@@ -49,8 +50,6 @@ public class MainCharacterMovement : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        
-        
 
         //new code
         if (!dead) {
@@ -65,20 +64,22 @@ public class MainCharacterMovement : MonoBehaviour {
                 GetComponent<Animator>().SetBool("Moving", false);
             }
             if (lerpCycle >= 1f) {
-                currentNode = pathFinder.WorldPosToNode(transform.position);
+                currentNode = targetNode;
                 lerpCycle = 0;
-                switch (direction) {
+                switch (direction) { //next tile movement
                     case Dir.right:
+                        transform.rotation = Quaternion.Euler(0, 0, 0);
                         if (!pathFinder.grid[currentNode.gridX][currentNode.gridY + 1].isWall) { 
                             targetNode = pathFinder.grid[currentNode.gridX][currentNode.gridY+1];
-                            print("MovingRight");
+
                          }
                         else {
                             targetNode = currentNode;
-                            print(!pathFinder.grid[currentNode.gridX][currentNode.gridY + 1].isWall);
+                            
                         }
                         break;
                     case Dir.up:
+                        transform.rotation = Quaternion.Euler(0, 0, 90);
                         if (!pathFinder.grid[currentNode.gridX - 1][currentNode.gridY].isWall)
                             targetNode = pathFinder.grid[currentNode.gridX - 1][currentNode.gridY];
                         else
@@ -87,6 +88,7 @@ public class MainCharacterMovement : MonoBehaviour {
                         }
                         break;
                     case Dir.left:
+                        transform.rotation = Quaternion.Euler(0, 0, 180);
                         if (!pathFinder.grid[currentNode.gridX][currentNode.gridY - 1].isWall)
                             targetNode = pathFinder.grid[currentNode.gridX][currentNode.gridY - 1];
                         else
@@ -95,6 +97,7 @@ public class MainCharacterMovement : MonoBehaviour {
                         }
                         break;
                     case Dir.down:
+                        transform.rotation = Quaternion.Euler(0, 0, 270);
                         if (!pathFinder.grid[currentNode.gridX+1][currentNode.gridY].isWall)
                             targetNode = pathFinder.grid[currentNode.gridX+1][currentNode.gridY];
                         else
@@ -105,6 +108,8 @@ public class MainCharacterMovement : MonoBehaviour {
                     default:
                         break;
                 }
+                intersect = (pathFinder.IsNodeIntersection(targetNode));
+                print(intersect);
             }
         }
         // Power pellets
@@ -120,27 +125,24 @@ public class MainCharacterMovement : MonoBehaviour {
             }
         }
 
-        if ((pathFinder.IsNodeIntersection(currentNode)&& lerpCycle <.51f)|| currentNode == targetNode) {
+        if (intersect || currentNode == targetNode) { //reading input
 
-            if ((Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D)) && !pathFinder.grid[currentNode.gridX][currentNode.gridY+1].isWall)
+            if ((Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D)) && !pathFinder.grid[targetNode.gridX][targetNode.gridY+1].isWall)
             {
                 direction = Dir.right;
-                transform.rotation = Quaternion.Euler(0, 0, 0);
+                
             } 
-            if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W) && !pathFinder.grid[currentNode.gridX-1][currentNode.gridY].isWall)
+            if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W) && !pathFinder.grid[targetNode.gridX-1][targetNode.gridY].isWall)
             {
                 direction = Dir.up;
-                transform.rotation = Quaternion.Euler(0, 0, 90);
             }
-            if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A) && !pathFinder.grid[currentNode.gridX][currentNode.gridY-1].isWall)
+            if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A) && !pathFinder.grid[targetNode.gridX][targetNode.gridY-1].isWall)
             {
                 direction = Dir.left;
-                transform.rotation = Quaternion.Euler(0, 0, 180);
             }
-            if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S) && !pathFinder.grid[currentNode.gridX+1][currentNode.gridY].isWall)
+            if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S) && !pathFinder.grid[targetNode.gridX+1][targetNode.gridY].isWall)
             {
                 direction = Dir.down;
-                transform.rotation = Quaternion.Euler(0, 0, 270);
             }
         }
     }
