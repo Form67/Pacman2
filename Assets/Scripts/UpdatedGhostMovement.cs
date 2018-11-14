@@ -26,7 +26,7 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 
 	public float frightenedTime;
 
-	public Animator animator;
+	Animator animator;
 
 	public float closeEnoughDistance;
 
@@ -66,6 +66,7 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 				ghostsList.Add (ghost.GetComponent<UpdatedGhostMovement> ());
 			}
 		}
+		pathFinder = GameObject.FindGameObjectWithTag ("pathfinding").GetComponent<PathFinding> ();
 	}
 	
 	// Update is called once per frame
@@ -93,6 +94,7 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 				velocity = PathFollow ();
 				break;
 			case State.FRIGHTENED:
+				currentPath = null;
 				Node currentNode = pathFinder.WorldPosToNode (transform.position);
 				if (pathFinder.IsNodeIntersection (currentNode)) {
 					List<Node> neighbors = pathFinder.GetNeighbors (currentNode);
@@ -143,7 +145,7 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 	}
 
 	Vector3 PathFollow(){
-		return StaticSeek (transform.position, currentPath [1].pos);
+		return StaticSeek (transform.position, currentPath.Count > 1 ? currentPath [1].pos : currentPath[0].pos);
 	}
 
 	Vector3 StaticSeek(Vector3 position, Vector3 target){
@@ -162,12 +164,16 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 	}
 
 	void CheckForFutureCollisions(){
-		foreach (UpdatedGhostMovement ghostScript in ghostsList) {
-			for (int i = 0; i < lookAheadIndexesForCollision; ++i) {
-				for (int j = 0; j < lookAheadIndexesForCollision; ++j) {
-					if (currentPath [i] == ghostScript.currentPath [j]) {
-						rbody.velocity = -rbody.velocity;
-						return;
+		if (currentPath != null) {
+			foreach (UpdatedGhostMovement ghostScript in ghostsList) {
+				if (ghostScript.currentPath != null) {
+					for (int i = 0; i < lookAheadIndexesForCollision; ++i) {
+						for (int j = 0; j < lookAheadIndexesForCollision; ++j) {
+							if (currentPath [i] == ghostScript.currentPath [j]) {
+								rbody.velocity = -rbody.velocity;
+								return;
+							}
+						}
 					}
 				}
 			}

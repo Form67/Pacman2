@@ -426,7 +426,7 @@ GameObject:
   - component: {fileID: 384525375}
   m_Layer: 0
   m_Name: PathFinder
-  m_TagString: Untagged
+  m_TagString: pathfinding
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
