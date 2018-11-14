@@ -61,6 +61,57 @@ public class PathFinding : MonoBehaviour {
 
             // Visit all the neighbors of the current node
             List<Node> neighbors = GetNeighbors(currentNode);
+
+            // Prioritize checking the tile the ghost is facing first
+            if(start == currentNode && dir != Direction.None)
+            {
+                if(dir == Direction.Up)
+                {
+                    // up neightbor is first
+                }
+                else if(dir == Direction.Down)
+                {
+                    Node downNeighbor = neighbors[1];
+
+                    if (IsNodeIntersection(downNeighbor))
+                        break;
+
+                    // Push to front
+                    neighbors.RemoveAt(1);
+                    neighbors.Reverse();
+                    neighbors.Add(downNeighbor);
+                    neighbors.Reverse();
+                }
+                else if (dir == Direction.Left)
+                {
+                    Node leftNeighbor = neighbors[2];
+
+                    if (IsNodeIntersection(leftNeighbor))
+                        break;
+
+                    // Push to front
+                    neighbors.RemoveAt(2);
+                    neighbors.Reverse();
+                    neighbors.Add(leftNeighbor);
+                    neighbors.Reverse();
+                }
+
+                else if (dir == Direction.Right)
+                {
+                    Node rightNeighbor = neighbors[3];
+
+                    if (IsNodeIntersection(rightNeighbor))
+                        break;
+
+                    // Push to front
+                    neighbors.RemoveAt(3);
+                    neighbors.Reverse();
+                    neighbors.Add(rightNeighbor);
+                    neighbors.Reverse();
+                }
+            }
+
+            // Check all the neighbors of the currrentNode
             foreach (Node neighbor in neighbors)
             {
                 // Ignore already evaluated neighbor
