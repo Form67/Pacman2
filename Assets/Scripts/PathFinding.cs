@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum Direction {  None, Up, Down, Left, Right }
+
 public class PathFinding : MonoBehaviour {
     public List<Node[]> grid;
     int numRows { get { return grid.Count; } }
@@ -24,7 +26,7 @@ public class PathFinding : MonoBehaviour {
     }
 
     // A-Star path finding algorithm
-    public List<Node> AStar(Node start, Node target)
+    public List<Node> AStar(Node start, Node target, Direction dir = Direction.None)
     {
         List<Node> openList = new List<Node>();   // List of discovered nodes that haven't been evaluated yet
         List<Node> closedList = new List<Node>(); // List of nodes that have already been evaluated
@@ -46,7 +48,7 @@ public class PathFinding : MonoBehaviour {
             }
             
             // Check if target was reached
-            if (currentNode.Equals(target))
+            if (start != currentNode && currentNode.Equals(target))
             {
                 return ConstructPath(start, target);
             }
