@@ -298,17 +298,9 @@ public class mapGenerator : MonoBehaviour {
         if (currLevel != null)
         {
             ui.SaveHighScore();
-        }
-
-        if (currLevel != null) {
-            string path = "Assets/TextFiles/highscore.txt";
-            StreamWriter wr = new StreamWriter(path);
-            wr.Write(ui.score);
-            wr.Close();
-			Destroy (currLevel);
+            Destroy(currLevel);
             score = 0;
-		}
-
+        }
 
         lives = 3;
         ui.ResetLives();
@@ -341,10 +333,6 @@ public class mapGenerator : MonoBehaviour {
 		GameObject currLevel = GameObject.FindGameObjectWithTag ("level");
 		GameObject pacmanSpawned = GameObject.FindGameObjectWithTag ("pacman");
 		MainCharacterMovement pacmanScript = pacmanSpawned.GetComponent<MainCharacterMovement> ();
-        string path = "Assets/TextFiles/highscore.txt";
-        StreamWriter wr = new StreamWriter(path);
-        wr.Write(ui.score);
-        wr.Close();
 		Destroy (pacmanSpawned);
 		GameObject[] ghosts = GameObject.FindGameObjectsWithTag ("ghost");
 		foreach (GameObject ghost in ghosts) {
