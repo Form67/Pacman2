@@ -35,6 +35,7 @@ public class PinkyScript : UpdatedGhostMovement {
 		}
 
 		targetPoint = pathFinder.WorldPosToNode(pacmanGoalNode.pos);
+
 	}
 
 	protected override void GetScatterTarget() {

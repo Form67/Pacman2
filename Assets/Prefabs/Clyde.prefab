@@ -114,10 +114,10 @@ MonoBehaviour:
   - 5
   - 5
   - 5
-  maxVelocity: 1
+  maxVelocity: 0.5
   frightenedVelocity: 2
   frightenedTime: 7
-  closeEnoughDistance: 0.01
+  closeEnoughDistance: 0.05
   lookAheadIndexesForCollision: 2
 --- !u!212 &212977736067418928
 SpriteRenderer:

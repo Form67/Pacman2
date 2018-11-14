@@ -84,7 +84,7 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 		}
 
 		Vector3 velocity;
-		if (Vector3.Distance (transform.position, pathFinder.WorldPosToNode (transform.position).pos) < closeEnoughDistance) {
+		//if (Vector3.Distance (transform.position, pathFinder.WorldPosToNode (transform.position).pos) < closeEnoughDistance) {
 			CheckForFutureCollisions ();
 			switch (currentState) {
 			case State.CHASE:
@@ -141,7 +141,7 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 					animator.SetTrigger ("godown");
 				}
 			}
-		}
+		//}
 	}
 
 	Vector3 PathFollow(){
