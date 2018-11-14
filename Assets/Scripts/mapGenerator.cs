@@ -113,6 +113,7 @@ public class mapGenerator : MonoBehaviour {
         /**/
         OrientWalls ();
 
+        ui.ReadHighScore();
 
         // Send new board to pathfinding algo
         path.InitGraph(new List<GameObject[]>(board));
@@ -293,6 +294,12 @@ public class mapGenerator : MonoBehaviour {
 
 	public void ResetGame(){
 		GameObject currLevel = GameObject.FindGameObjectWithTag ("level");
+
+        if (currLevel != null)
+        {
+            ui.SaveHighScore();
+        }
+
         if (currLevel != null) {
             string path = "Assets/TextFiles/highscore.txt";
             StreamWriter wr = new StreamWriter(path);
@@ -307,7 +314,6 @@ public class mapGenerator : MonoBehaviour {
         ui.ResetLives();
         Begin ();
 
-        ui.ReadHighScore();
         ui.ClearScore();
     }
 

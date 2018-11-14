@@ -44,12 +44,16 @@ public class UIDisplay : MonoBehaviour {
             highScore = int.Parse(parsedText);
         highScoreText.text = "Highscore: " + highScore;
         reader.Close();
+
+        //print("read " + highScore);
     }
 
     public void SaveHighScore()
     {
         if (score > highScore)
             highScore = score;
+
+        //print("saving " + highScore);
 
         string path = "Assets/TextFiles/highscore.txt";
         StreamWriter wr = new StreamWriter(path);
