@@ -32,7 +32,7 @@ public class mapGenerator : MonoBehaviour {
 
     PathFinding path;
     UIDisplay ui;
-    int lives = 2;
+    int lives = 3;
     public int score = 0;
 
     void Start()
@@ -294,6 +294,7 @@ public class mapGenerator : MonoBehaviour {
 	}
 
 	public void ResetGame(){
+        //print("hard reset");
 		GameObject currLevel = GameObject.FindGameObjectWithTag ("level");
 
         if (currLevel != null)
@@ -308,12 +309,21 @@ public class mapGenerator : MonoBehaviour {
         Begin ();
 
         ui.ClearScore();
+
+        StartCoroutine(StartSeq());
+    }
+
+    IEnumerator StartSeq()
+    {
+        yield return new WaitForSeconds(0.8f);
+        ui.SetDisplay(lives);
     }
 
     // Do not save or reset scores
     public void SoftResetGame()
     {
-        if (lives == 2)
+        //print("sort reset");
+        if (lives < 0)
         {
             ResetGame();
             return;
@@ -380,10 +390,10 @@ public class mapGenerator : MonoBehaviour {
     public void DecLives()
     {
         lives--;
-        // Reset
-        if(lives < 0)
-        {
-            lives = 2;
-        }
+    }
+
+    public void IncLife()
+    {
+        lives++;
     }
 }
