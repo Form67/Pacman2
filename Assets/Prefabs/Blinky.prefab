@@ -22,8 +22,8 @@ GameObject:
   - component: {fileID: 212001912555040992}
   - component: {fileID: 50107274416632820}
   - component: {fileID: 58958623463567886}
-  - component: {fileID: 114596089290164786}
   - component: {fileID: 95105949851889866}
+  - component: {fileID: 114726676414805190}
   m_Layer: 0
   m_Name: Blinky
   m_TagString: ghost
@@ -97,7 +97,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &114596089290164786
+--- !u!114 &114726676414805190
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -105,14 +105,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 1390253288826638}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 49d98a4df6200a7418471188c00c20a4, type: 3}
+  m_Script: {fileID: 11500000, guid: a7a782fe95c6d6b488b71ab6b5160d02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  goingHorizontal: 0
-  rb: {fileID: 0}
-  speed: 1
-  an: {fileID: 0}
-  cooldown: 0
+  waveStates: 0100000002000000010000000200000001000000
+  waveEndTimes:
+  - 5
+  - 5
+  - 5
+  - 5
+  maxVelocity: 1
+  frightenedVelocity: 2
+  frightenedTime: 7
+  closeEnoughDistance: 0.01
+  lookAheadIndexesForCollision: 2
 --- !u!212 &212001912555040992
 SpriteRenderer:
   m_ObjectHideFlags: 1

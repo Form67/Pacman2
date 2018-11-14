@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using System.IO;
 
 public class MainCharacterMovement : MonoBehaviour {
     public float velocity;
@@ -24,7 +23,14 @@ public class MainCharacterMovement : MonoBehaviour {
 
     int ghostScore = 100;
 
+    mapGenerator map;
+    UIDisplay ui;
+
     // Use this for initialization
+    void Awake () {
+        map = FindObjectOfType<mapGenerator>();
+        ui = FindObjectOfType<UIDisplay>();
+
     void Start () {
         //new code
     
@@ -32,16 +38,9 @@ public class MainCharacterMovement : MonoBehaviour {
 
         //old code
         dead = false;
-        scoreText = GameObject.FindGameObjectWithTag("scoreText").GetComponent<Text>();
-        scoreText2 = GameObject.FindGameObjectWithTag("scoreText2").GetComponent<Text>();
-        score = 0;
-        GetComponent<CircleCollider2D>().enabled = true;
-        string path = "Assets/TextFiles/highscore.txt";
-        StreamReader reader = new StreamReader(path);
-        highScore = int.Parse(reader.ReadToEnd());
-        scoreText2.text = "Highscore: " +highScore;
-        reader.Close();
+        GetComponent<CircleCollider2D>().enabled = true; 
     }
+
 
     // Update is called once per frame
     void Update()
@@ -131,7 +130,7 @@ public class MainCharacterMovement : MonoBehaviour {
     {
         if (collision.gameObject.tag == "Pellet")
         {
-            score++;
+            ui.IncrementScore(1);
 
             if (collision.gameObject.name.Contains("Power"))
             {
@@ -151,21 +150,29 @@ public class MainCharacterMovement : MonoBehaviour {
             if (isInvincible)
             {
                 // do invincible behavior
-                score += ghostScore;
+                ui.IncrementScore(ghostScore);
                 ghostScore *= 2;
             }
             else
             {
-                GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
+                mapGenerator mapGen = FindObjectOfType<mapGenerator>();
+                mapGen.DecLives();
 
-                string path = "Assets/TextFiles/highscore.txt";
-                StreamWriter wr = new StreamWriter(path);
-                wr.Write(highScore);
-                wr.Close();
+                GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
+                
+               
                 dead = true;
                 GetComponent<Animator>().SetBool("Dead", true);
                 GetComponent<CircleCollider2D>().enabled = false;
+
+                StartCoroutine(Respawn());
             }
         }
+    }
+
+    IEnumerator Respawn()
+    {
+        yield return new WaitForSeconds(2.0f);
+        FindObjectOfType<mapGenerator>().SoftResetGame();
     }
 }

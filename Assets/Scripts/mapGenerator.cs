@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class mapGenerator : MonoBehaviour {
 
@@ -29,10 +30,14 @@ public class mapGenerator : MonoBehaviour {
 	public GameObject level;
 
     PathFinding path;
+    UIDisplay ui;
+    int lives = 2;
+    public int score = 0;
 
     void Start()
     {
-         path = FindObjectOfType<PathFinding>();
+        path = FindObjectOfType<PathFinding>();
+        ui = FindObjectOfType<UIDisplay>();
     }
 
     // Use this for initialization
@@ -95,7 +100,8 @@ public class mapGenerator : MonoBehaviour {
 					board [boardHeight] [i] = Instantiate (emptyCell, currLevel.transform);
 					GameObject pacmanSpawned = Instantiate (pacman, currLevel.transform);
 					pacmanSpawned.transform.position = new Vector3 (topLeftX + cellSize * i, topLeftY - cellSize * boardHeight);
-				} 
+
+                } 
 				board [boardHeight] [i].transform.position = new Vector3 (topLeftX + cellSize * i, topLeftY - cellSize * boardHeight);
 
 
@@ -106,6 +112,8 @@ public class mapGenerator : MonoBehaviour {
 		inp_strm.Close();
         /**/
         OrientWalls ();
+
+        ui.ReadHighScore();
 
         // Send new board to pathfinding algo
         path.InitGraph(new List<GameObject[]>(board));
@@ -286,25 +294,45 @@ public class mapGenerator : MonoBehaviour {
 
 	public void ResetGame(){
 		GameObject currLevel = GameObject.FindGameObjectWithTag ("level");
-		if (currLevel != null) {
-			string path = "Assets/TextFiles/highscore.txt";
-			StreamWriter wr = new StreamWriter(path);
-			wr.Write(GameObject.FindGameObjectWithTag("pacman").GetComponent<MainCharacterMovement>().score);
-			wr.Close();
-			Destroy (currLevel);
-		}
+
+        if (currLevel != null)
+        {
+            ui.SaveHighScore();
+            Destroy(currLevel);
+            score = 0;
+        }
+
+        lives = 2;
+        ui.ResetLives();
         Begin ();
-	}
+
+        ui.ClearScore();
+    }
+
+    // Do not save or reset scores
+    public void SoftResetGame()
+    {
+        if (lives == 2)
+        {
+            ResetGame();
+            return;
+        }
+
+        GameObject currLevel = GameObject.FindGameObjectWithTag("level");
+        if (currLevel != null)
+        {
+            Destroy(currLevel);
+        }
+
+        ui.SetDisplay(lives);
+
+        Begin();
+    }
 
 	void ResetLevel(){
 		GameObject currLevel = GameObject.FindGameObjectWithTag ("level");
 		GameObject pacmanSpawned = GameObject.FindGameObjectWithTag ("pacman");
 		MainCharacterMovement pacmanScript = pacmanSpawned.GetComponent<MainCharacterMovement> ();
-        string path = "Assets/TextFiles/highscore.txt";
-        StreamWriter wr = new StreamWriter(path);
-        wr.Write(GameObject.FindGameObjectWithTag("pacman").GetComponent<MainCharacterMovement>().score);
-        wr.Close();
-        int currScore = pacmanScript.score;
 		Destroy (pacmanSpawned);
 		GameObject[] ghosts = GameObject.FindGameObjectsWithTag ("ghost");
 		foreach (GameObject ghost in ghosts) {
@@ -313,7 +341,7 @@ public class mapGenerator : MonoBehaviour {
 		StreamReader inp_strm = new StreamReader (filePath);
 		int boardHeight = 0;
 
-		while (!inp_strm.EndOfStream) {
+        while (!inp_strm.EndOfStream) {
 			string line = inp_strm.ReadLine ();
 			for (int i = 0; i < line.Length; ++i) {
 				char c = line [i];
@@ -337,12 +365,24 @@ public class mapGenerator : MonoBehaviour {
 					GameObject newPacman = Instantiate (pacman, currLevel.transform);
 					newPacman.transform.position = new Vector3 (topLeftX + cellSize * i, topLeftY - cellSize * boardHeight);
 					pacmanScript = newPacman.GetComponent<MainCharacterMovement> ();
-					pacmanScript.score = currScore;
 				} 
 			}
 			++boardHeight;
 
 		}
 		inp_strm.Close ();
+
+        ui.ReadHighScore();
 	}
+
+
+    public void DecLives()
+    {
+        lives--;
+        // Reset
+        if(lives < 0)
+        {
+            lives = 2;
+        }
+    }
 }

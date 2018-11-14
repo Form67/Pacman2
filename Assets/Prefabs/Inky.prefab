@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 212659252476915870}
   - component: {fileID: 50462313498871628}
   - component: {fileID: 58516187925649070}
-  - component: {fileID: 114584928419241472}
+  - component: {fileID: 114656635346594284}
   - component: {fileID: 95913020880271984}
   m_Layer: 0
   m_Name: Inky
@@ -97,7 +97,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &114584928419241472
+--- !u!114 &114656635346594284
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -105,14 +105,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 1354036740339576}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 49d98a4df6200a7418471188c00c20a4, type: 3}
+  m_Script: {fileID: 11500000, guid: 2143a2f1fcee6974fadb8072ae85cc80, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  goingHorizontal: 0
-  rb: {fileID: 0}
-  speed: 1
-  an: {fileID: 0}
-  cooldown: 0
+  waveStates: 0100000002000000010000000200000001000000
+  waveEndTimes:
+  - 5
+  - 5
+  - 5
+  - 5
+  maxVelocity: 1
+  frightenedVelocity: 2
+  frightenedTime: 7
+  closeEnoughDistance: 0.01
+  lookAheadIndexesForCollision: 2
 --- !u!212 &212659252476915870
 SpriteRenderer:
   m_ObjectHideFlags: 1

@@ -11,6 +11,7 @@ TagManager:
   - level
   - scoreText
   - scoreText2
+  - pathfinding
   layers:
   - Default
   - TransparentFX
