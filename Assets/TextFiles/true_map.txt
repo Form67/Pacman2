@@ -8,15 +8,15 @@ W.WWWW.WW.WWWWWWWW.WW.WWWW.W
 W.WWWW.WW.WWWWWWWW.WW.WWWW.W
 W......WW....WW....WW......W
 WWWWWW.WWWWW WW WWWWW.WWWWWW
-     W.WWWWW WW WWWWW.W     
-     W.WW    B     WW.W     
-     W.WW GGG  GGG WW.W     
-     W.WW G      G WW.W     
-     W.   GI P C G   .W     
-     W.WW G      G WW.W     
-     W.WW GGGGGGGG WW.W     
-     W.WW    M     WW.W     
-     W.WW WWWWWWWW WW.W     
+wwwwwW.WWWWW WW WWWWW.Wwwwww
+wwwwwW.WW          WW.Wwwwww
+wwwwwW.WW GGG  GGG WW.Wwwwww
+wwwwwW.WW G      G WW.Wwwwww
+wwwwwW.   G  P   G   .Wwwwww
+wwwwwW.WW G      G WW.Wwwwww
+wwwwwW.WW GGGGGGGG WW.Wwwwww
+wwwwwW.WW    M     WW.Wwwwww
+wwwwwW.WW WWWWWWWW WW.Wwwwww
 WWWWWW.WW WWWWWWWW WW.WWWWWW
 W............WW............W
 W.WWWW.WWWWW.WW.WWWWW.WWWW.W

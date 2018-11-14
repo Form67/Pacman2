@@ -16,6 +16,7 @@ public class mapGenerator : MonoBehaviour {
 
 	public GameObject wall;
 	public GameObject emptyCell;
+	public GameObject emptyWallCell;
 	public GameObject pellet;
 	public GameObject powerPellet;
 
@@ -67,9 +68,9 @@ public class mapGenerator : MonoBehaviour {
 					tileTypes [boardHeight] [i] = "W";
 				} else if (c == 'G') {
 					board [boardHeight] [i] = Instantiate (wall, currLevel.transform);
-					//CellScript cellScript = board [boardHeight] [i].GetComponent<CellScript> ();
-					//cellScript.SetSprite (14);
 					tileTypes [boardHeight] [i] = "G";
+				} else if (c == 'w') {
+					board [boardHeight] [i] = Instantiate (emptyWallCell, currLevel.transform);
 				} else if (c == '.') {
 					board [boardHeight] [i] = Instantiate (emptyCell, currLevel.transform);
 					GameObject pelletSpawned = Instantiate (pellet, currLevel.transform);
