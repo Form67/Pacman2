@@ -10,22 +10,28 @@ public class UIDisplay : MonoBehaviour {
     public Text scoreText;
     public Text highScoreText;
 
-    int visibleCount = 2;
+    int visibleCount = 3;
 
     [HideInInspector]
     public int score;
     int highScore;
 
+    mapGenerator mapGen;
+
+    int extraLifeThreshold = 10000;
+
 	// Use this for initialization
 	void Start () {
 
-        for (int i = 0; i < transform.childCount-1; i++)
+        for (int i = 0; i < transform.childCount; i++)
         {
             lifeSprites.Add(transform.GetChild(i).gameObject);
         }
 
         scoreText = GameObject.FindGameObjectWithTag("scoreText").GetComponent<Text>();
         highScoreText = GameObject.FindGameObjectWithTag("scoreText2").GetComponent<Text>();
+
+        mapGen = FindObjectOfType<mapGenerator>();
     }
 
     private void Update()
@@ -35,6 +41,7 @@ public class UIDisplay : MonoBehaviour {
 
     public void ReadHighScore()
     {
+
         string path = "Assets/TextFiles/highscore.txt";
         StreamReader reader = new StreamReader(path);
         string parsedText = reader.ReadToEnd().Trim();
@@ -61,10 +68,14 @@ public class UIDisplay : MonoBehaviour {
         wr.Close();
     }
 
+
+    // Round has reset
     public void ClearScore()
     {
         scoreText.text = "Score: 0";
         score = 0;
+
+        extraLifeThreshold = 10000;
     }
 
     public void UpdateScoreText(int score){
@@ -78,6 +89,18 @@ public class UIDisplay : MonoBehaviour {
     public void IncrementScore(int inc)
     {
         score += inc;
+
+        // Gain a extra life every 10,000 points
+        if (score >= extraLifeThreshold && visibleCount < 3)
+        {
+            mapGen.IncLife();
+            visibleCount++;
+
+            lifeSprites[visibleCount - 1].SetActive(true);
+
+            extraLifeThreshold += extraLifeThreshold;
+        }
+
     }
 
     public void UpdateHighScoreText(int highScore)
@@ -102,7 +125,7 @@ public class UIDisplay : MonoBehaviour {
         foreach (GameObject child in lifeSprites)
             child.SetActive(true);
 
-        visibleCount = 2;
+        visibleCount = 3;
     }
 
 }
