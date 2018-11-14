@@ -150,8 +150,8 @@ public class PathFinding : MonoBehaviour {
     // Maps world position to the closest node in the grid
     public Node WorldPosToNode(Vector3 pos)
     {
-        Node closest = grid[0][0];
-        float closestDist = Vector3.Distance(pos, grid[0][0].pos);
+		Node closest = null;
+		float closestDist = float.MaxValue;
 
         for (int x = 0; x < numRows; x++)
         {
