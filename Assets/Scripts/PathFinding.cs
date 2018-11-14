@@ -59,57 +59,50 @@ public class PathFinding : MonoBehaviour {
             closedList.Add(currentNode);
 
 
-            // Visit all the neighbors of the current node
-            List<Node> neighbors = GetNeighbors(currentNode);
 
-            // Prioritize checking the tile the ghost is facing first
-            if(start == currentNode && dir != Direction.None)
+            // Can only move in one direction through an aisle
+            if (!IsNodeIntersection(currentNode))
             {
-                if(dir == Direction.Up)
+                print(dir);
+                Node neighbor = null;
+                if (dir == Direction.Up)
                 {
-                    // up neightbor is first
+                    neighbor = grid[currentNode.gridX][currentNode.gridY + 1];
                 }
-                else if(dir == Direction.Down)
+                else if (dir == Direction.Down)
                 {
-                    Node downNeighbor = neighbors[1];
-
-                    if (IsNodeIntersection(downNeighbor))
-                        break;
-
-                    // Push to front
-                    neighbors.RemoveAt(1);
-                    neighbors.Reverse();
-                    neighbors.Add(downNeighbor);
-                    neighbors.Reverse();
+                    neighbor = grid[currentNode.gridX][currentNode.gridY + 1];
                 }
                 else if (dir == Direction.Left)
                 {
-                    Node leftNeighbor = neighbors[2];
-
-                    if (IsNodeIntersection(leftNeighbor))
-                        break;
-
-                    // Push to front
-                    neighbors.RemoveAt(2);
-                    neighbors.Reverse();
-                    neighbors.Add(leftNeighbor);
-                    neighbors.Reverse();
+                    neighbor = grid[currentNode.gridX - 1][currentNode.gridY];
                 }
-
                 else if (dir == Direction.Right)
                 {
-                    Node rightNeighbor = neighbors[3];
-
-                    if (IsNodeIntersection(rightNeighbor))
-                        break;
-
-                    // Push to front
-                    neighbors.RemoveAt(3);
-                    neighbors.Reverse();
-                    neighbors.Add(rightNeighbor);
-                    neighbors.Reverse();
+                    neighbor = grid[currentNode.gridX + 1][currentNode.gridY];
                 }
+
+                if (neighbor != null && neighbor.isWall == false)
+                {
+                    if (!openList.Contains(neighbor))
+                    {
+                        openList.Add(neighbor);
+                    }
+
+                    neighbor.gCost = currentNode.gCost + ManhattanDistance(currentNode, neighbor);
+                    neighbor.hCost = ManhattanDistance(currentNode, neighbor);
+                    neighbor.parent = currentNode;
+
+                    print("Added non default");
+
+                    continue;
+                }
+
+                print("Added default");
             }
+            // Perform regular path finding (can proceed to any non-wall neighbor)
+            // Visit all the neighbors of the current node
+            List<Node> neighbors = GetNeighbors(currentNode);
 
             // Check all the neighbors of the currrentNode
             foreach (Node neighbor in neighbors)
@@ -130,13 +123,14 @@ public class PathFinding : MonoBehaviour {
                 // Path is not better
                 else if (cost >= neighbor.gCost)
                     continue;
-                
+
 
                 // Path is better
                 neighbor.gCost = cost;
                 neighbor.hCost = ManhattanDistance(currentNode, neighbor);
                 neighbor.parent = currentNode;
 
+                
             }
         }
 
