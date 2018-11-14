@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class mapGenerator : MonoBehaviour {
 
@@ -29,14 +30,14 @@ public class mapGenerator : MonoBehaviour {
 	public GameObject level;
 
     PathFinding path;
-    LivesDisplay livesDisp;
+    UIDisplay ui;
     int lives = 3;
     public int score = 0;
 
     void Start()
     {
         path = FindObjectOfType<PathFinding>();
-        livesDisp = FindObjectOfType<LivesDisplay>();
+        ui = FindObjectOfType<UIDisplay>();
     }
 
     // Use this for initialization
@@ -99,7 +100,6 @@ public class mapGenerator : MonoBehaviour {
 					board [boardHeight] [i] = Instantiate (emptyCell, currLevel.transform);
 					GameObject pacmanSpawned = Instantiate (pacman, currLevel.transform);
 					pacmanSpawned.transform.position = new Vector3 (topLeftX + cellSize * i, topLeftY - cellSize * boardHeight);
-                    pacmanSpawned.GetComponent<MainCharacterMovement>().score = score;
 
                 } 
 				board [boardHeight] [i].transform.position = new Vector3 (topLeftX + cellSize * i, topLeftY - cellSize * boardHeight);
@@ -296,8 +296,7 @@ public class mapGenerator : MonoBehaviour {
         if (currLevel != null) {
             string path = "Assets/TextFiles/highscore.txt";
             StreamWriter wr = new StreamWriter(path);
-            SetScore(GameObject.FindGameObjectWithTag("pacman").GetComponent<MainCharacterMovement>().score);
-            wr.Write(score);
+            wr.Write(ui.score);
             wr.Close();
 			Destroy (currLevel);
             score = 0;
@@ -305,9 +304,12 @@ public class mapGenerator : MonoBehaviour {
 
 
         lives = 3;
-        livesDisp.ResetLives();
+        ui.ResetLives();
         Begin ();
-	}
+
+        ui.ReadHighScore();
+        ui.ClearScore();
+    }
 
     // Do not save or reset scores
     public void SoftResetGame()
@@ -324,7 +326,7 @@ public class mapGenerator : MonoBehaviour {
             Destroy(currLevel);
         }
 
-        livesDisp.SetDisplay(lives);
+        ui.SetDisplay(lives);
 
         Begin();
     }
@@ -335,10 +337,8 @@ public class mapGenerator : MonoBehaviour {
 		MainCharacterMovement pacmanScript = pacmanSpawned.GetComponent<MainCharacterMovement> ();
         string path = "Assets/TextFiles/highscore.txt";
         StreamWriter wr = new StreamWriter(path);
-        SetScore(pacmanScript.score);
-        wr.Write(score);
+        wr.Write(ui.score);
         wr.Close();
-        int currScore = pacmanScript.score;
 		Destroy (pacmanSpawned);
 		GameObject[] ghosts = GameObject.FindGameObjectsWithTag ("ghost");
 		foreach (GameObject ghost in ghosts) {
@@ -371,13 +371,14 @@ public class mapGenerator : MonoBehaviour {
 					GameObject newPacman = Instantiate (pacman, currLevel.transform);
 					newPacman.transform.position = new Vector3 (topLeftX + cellSize * i, topLeftY - cellSize * boardHeight);
 					pacmanScript = newPacman.GetComponent<MainCharacterMovement> ();
-					pacmanScript.score = currScore;
 				} 
 			}
 			++boardHeight;
 
 		}
 		inp_strm.Close ();
+
+        ui.ReadHighScore();
 	}
 
 
@@ -389,11 +390,5 @@ public class mapGenerator : MonoBehaviour {
         {
             lives = 3;
         }
-    }
-
-    public void SetScore(int s)
-    {
-        if (s > score)
-            score = s;
     }
 }

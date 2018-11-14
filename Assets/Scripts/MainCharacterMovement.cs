@@ -3,17 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using System.IO;
 
 public class MainCharacterMovement : MonoBehaviour {
     public float velocity;
     public int direction;
     public float currVelocity;
     public bool dead;
-    public int score;
-    public int highScore;
-    public Text scoreText;
-    public Text scoreText2;
 
     public float invDurationPerPellet;
     [HideInInspector]
@@ -23,38 +18,21 @@ public class MainCharacterMovement : MonoBehaviour {
     int ghostScore = 100;
 
     mapGenerator map;
-    LivesDisplay livesDisp;
+    UIDisplay ui;
 
     // Use this for initialization
-    void Start () {
+    void Awake () {
         map = FindObjectOfType<mapGenerator>();
-        livesDisp = FindObjectOfType<LivesDisplay>();
+        ui = FindObjectOfType<UIDisplay>();
 
         dead = false;
-        scoreText = GameObject.FindGameObjectWithTag("scoreText").GetComponent<Text>();
-        scoreText2 = GameObject.FindGameObjectWithTag("scoreText2").GetComponent<Text>();
-        score = 0;
-        GetComponent<CircleCollider2D>().enabled = true;
-
-        string path = "Assets/TextFiles/highscore.txt";
-        StreamReader reader = new StreamReader(path);
-        string parsedText = reader.ReadToEnd().Trim();
-        if (parsedText.Length == 0)
-            highScore = 0;
-        else
-            highScore = int.Parse(parsedText);
-        scoreText2.text = "Highscore: " +highScore;
-        reader.Close();
+        GetComponent<CircleCollider2D>().enabled = true; 
     }
+
 
     // Update is called once per frame
     void Update()
     {
-        scoreText.text = "Score: " + score;
-        if (score > highScore) {
-            highScore = score;
-            scoreText2.text = scoreText2.text = "Highscore: " + highScore;
-        }
         if (!dead)
         {
             // Power pellets
@@ -126,7 +104,7 @@ public class MainCharacterMovement : MonoBehaviour {
     {
         if (collision.gameObject.tag == "Pellet")
         {
-            score++;
+            ui.IncrementScore(1);
 
             if (collision.gameObject.name.Contains("Power"))
             {
@@ -146,7 +124,7 @@ public class MainCharacterMovement : MonoBehaviour {
             if (isInvincible)
             {
                 // do invincible behavior
-                score += ghostScore;
+                ui.IncrementScore(ghostScore);
                 ghostScore *= 2;
             }
             else
@@ -155,11 +133,8 @@ public class MainCharacterMovement : MonoBehaviour {
                 mapGen.DecLives();
 
                 GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
-
-                string path = "Assets/TextFiles/highscore.txt";
-                StreamWriter wr = new StreamWriter(path);
-                wr.Write(highScore);
-                wr.Close();
+                
+               
                 dead = true;
                 GetComponent<Animator>().SetBool("Dead", true);
                 GetComponent<CircleCollider2D>().enabled = false;

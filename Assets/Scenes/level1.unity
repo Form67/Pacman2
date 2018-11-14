@@ -296,6 +296,11 @@ Prefab:
       propertyPath: m_SizeDelta.x
       value: 182
       objectReference: {fileID: 0}
+    - target: {fileID: 114709865377454482, guid: f8d66cdfa74b137488f705e740d9bc1d,
+        type: 2}
+      propertyPath: m_Text
+      value: 'HighScore: 0'
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f8d66cdfa74b137488f705e740d9bc1d, type: 2}
   m_IsPrefabAsset: 0
@@ -498,7 +503,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fa69f19e0e2bb741b39f1602c909f26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  children: []
+  lifeSprites: []
+  scoreText: {fileID: 0}
+  highScoreText: {fileID: 0}
+  score: 0
 --- !u!1 &690931857
 GameObject:
   m_ObjectHideFlags: 0
