@@ -24,30 +24,47 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 
 	public float frightenedVelocity;
 
+	public float frightenedTime;
+
 	State currentState;
 	float startTime;
 	float currentEndTime;
+	float currentEndIndex = 0;
 
-	Node targetPoint;
+	protected Node targetPoint;
 
-	PathFinding pathFinder;
+	protected PathFinding pathFinder;
 
 	List<Node> currentPath;
 
 
 	Rigidbody2D rbody;
 
+    protected GameObject pacman;
+
 	// Use this for initialization
-	void Start () {
+	protected void Start () {
 		currentState = waveStates [0];
 		currentEndTime = waveEndTimes.Length > 0 ? waveEndTimes [0] : -1f;
+		currentEndIndex = 0;
 		startTime = Time.time;
-
+        pacman = GameObject.FindGameObjectWithTag("pacman");
 		rbody = GetComponent<Rigidbody2D> ();
 	}
 	
 	// Update is called once per frame
 	void Update () {
+
+		if (Time.time - startTime >= currentEndTime && currentEndTime != -1f && currentState != State.FRIGHTENED) {
+			currentEndIndex++;
+			currentEndTime = waveEndTimes.Length > currentEndIndex ? waveEndTimes [currentEndIndex] : -1f;
+			currentState = waveStates [currentEndIndex];
+			startTime = Time.time;
+		} else if (Time.time - startTime >= frightenedTime && currentState == State.FRIGHTENED) {
+			currentState = waveStates [currentEndIndex];
+			startTime = Time.time;
+		}
+
 		Vector3 velocity;
 		switch (currentState) {
 		case State.CHASE:
@@ -104,6 +121,13 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 
 	protected void SetTargetPointPoint (Node point){
 		targetPoint = point;
+	}
+
+	public void BecomeFrightened(){
+		currentEndTime -= Time.time - startTime;
+		startTime = Time.time;
+		currentState = State.FRIGHTENED;
+
 	}
 
 	abstract protected void DetermineTargetForChase ();
