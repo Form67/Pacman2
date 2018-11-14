@@ -2,20 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
+public enum State {
+	DEFAULT,
+	CHASE,
+	SCATTER,
+	FRIGHTENED
+}
+
 public abstract class UpdatedGhostMovement : MonoBehaviour {
-
-
-	[System.Serializable]
-	public enum State {
-		DEFAULT,
-		CHASE,
-		SCATTER,
-		FRIGHTENED
-	}
 		
-		
-
-
 	public State[] waveStates;
 	//Should be of one size lower than waveStates
 	public float[] waveEndTimes;
