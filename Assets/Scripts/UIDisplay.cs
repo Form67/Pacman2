@@ -10,7 +10,7 @@ public class UIDisplay : MonoBehaviour {
     public Text scoreText;
     public Text highScoreText;
 
-    int visibleCount = 3;
+    int visibleCount = 2;
 
     [HideInInspector]
     public int score;
@@ -19,7 +19,7 @@ public class UIDisplay : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 
-        for (int i = 0; i < transform.childCount; i++)
+        for (int i = 0; i < transform.childCount-1; i++)
         {
             lifeSprites.Add(transform.GetChild(i).gameObject);
         }
@@ -87,7 +87,8 @@ public class UIDisplay : MonoBehaviour {
 
     public void SetDisplay(int lives)
     {
-        for(int i = lives; i < visibleCount; i++)
+        //print("lives " + lives);
+        for (int i = lives; i < visibleCount; i++)
         {
             GameObject last = lifeSprites[visibleCount - 1];
             visibleCount--;
@@ -101,7 +102,7 @@ public class UIDisplay : MonoBehaviour {
         foreach (GameObject child in lifeSprites)
             child.SetActive(true);
 
-        visibleCount = 3;
+        visibleCount = 2;
     }
 
 }

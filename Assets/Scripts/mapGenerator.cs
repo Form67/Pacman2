@@ -31,7 +31,7 @@ public class mapGenerator : MonoBehaviour {
 
     PathFinding path;
     UIDisplay ui;
-    int lives = 3;
+    int lives = 2;
     public int score = 0;
 
     void Start()
@@ -302,7 +302,7 @@ public class mapGenerator : MonoBehaviour {
             score = 0;
         }
 
-        lives = 3;
+        lives = 2;
         ui.ResetLives();
         Begin ();
 
@@ -312,7 +312,7 @@ public class mapGenerator : MonoBehaviour {
     // Do not save or reset scores
     public void SoftResetGame()
     {
-        if (lives == 0)
+        if (lives == 2)
         {
             ResetGame();
             return;
@@ -382,7 +382,7 @@ public class mapGenerator : MonoBehaviour {
         // Reset
         if(lives < 0)
         {
-            lives = 3;
+            lives = 2;
         }
     }
 }
