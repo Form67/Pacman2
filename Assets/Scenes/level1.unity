@@ -299,7 +299,7 @@ Prefab:
     - target: {fileID: 114709865377454482, guid: f8d66cdfa74b137488f705e740d9bc1d,
         type: 2}
       propertyPath: m_Text
-      value: 'HighScore: 0'
+      value: 'Highscore: 0'
       objectReference: {fileID: 0}
     - target: {fileID: 114613255644359070, guid: f8d66cdfa74b137488f705e740d9bc1d,
         type: 2}
