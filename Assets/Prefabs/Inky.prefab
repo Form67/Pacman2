@@ -114,7 +114,7 @@ MonoBehaviour:
   - 5
   - 5
   - 5
-  maxVelocity: 4
+  maxVelocity: 1
   frightenedVelocity: 2
   frightenedTime: 7
   closeEnoughDistance: 0.01
