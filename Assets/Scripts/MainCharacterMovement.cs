@@ -109,7 +109,6 @@ public class MainCharacterMovement : MonoBehaviour {
                         break;
                 }
                 intersect = (pathFinder.IsNodeIntersection(targetNode));
-                print(intersect);
             }
         }
         // Power pellets
@@ -125,7 +124,6 @@ public class MainCharacterMovement : MonoBehaviour {
             }
         }
 
-        if (intersect || currentNode == targetNode) { //reading input
 
             if ((Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D)) && !pathFinder.grid[targetNode.gridX][targetNode.gridY+1].isWall)
             {
@@ -144,7 +142,7 @@ public class MainCharacterMovement : MonoBehaviour {
             {
                 direction = Dir.down;
             }
-        }
+        
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
