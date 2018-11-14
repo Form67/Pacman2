@@ -16,6 +16,10 @@ public class UIDisplay : MonoBehaviour {
     public int score;
     int highScore;
 
+    mapGenerator mapGen;
+
+    int extraLifeThreshold = 10000;
+
 	// Use this for initialization
 	void Start () {
 
@@ -26,6 +30,8 @@ public class UIDisplay : MonoBehaviour {
 
         scoreText = GameObject.FindGameObjectWithTag("scoreText").GetComponent<Text>();
         highScoreText = GameObject.FindGameObjectWithTag("scoreText2").GetComponent<Text>();
+
+        mapGen = FindObjectOfType<mapGenerator>();
     }
 
     private void Update()
@@ -35,6 +41,7 @@ public class UIDisplay : MonoBehaviour {
 
     public void ReadHighScore()
     {
+
         string path = "Assets/TextFiles/highscore.txt";
         StreamReader reader = new StreamReader(path);
         string parsedText = reader.ReadToEnd().Trim();
@@ -61,10 +68,14 @@ public class UIDisplay : MonoBehaviour {
         wr.Close();
     }
 
+
+    // Round has reset
     public void ClearScore()
     {
         scoreText.text = "Score: 0";
         score = 0;
+
+        extraLifeThreshold = 10000;
     }
 
     public void UpdateScoreText(int score){
@@ -78,6 +89,18 @@ public class UIDisplay : MonoBehaviour {
     public void IncrementScore(int inc)
     {
         score += inc;
+
+        // Gain a extra life every 10,000 points
+        if (score >= extraLifeThreshold && visibleCount < 2)
+        {
+            mapGen.IncLife();
+            visibleCount++;
+
+            lifeSprites[visibleCount - 1].SetActive(true);
+
+            extraLifeThreshold += extraLifeThreshold;
+        }
+
     }
 
     public void UpdateHighScoreText(int highScore)

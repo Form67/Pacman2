@@ -385,4 +385,9 @@ public class mapGenerator : MonoBehaviour {
             lives = 2;
         }
     }
+
+    public void IncLife()
+    {
+        lives++;
+    }
 }
