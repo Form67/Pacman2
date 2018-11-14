@@ -29,7 +29,7 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 	State currentState;
 	float startTime;
 	float currentEndTime;
-	float currentEndIndex = 0;
+	int currentEndIndex = 0;
 
 	protected Node targetPoint;
 
