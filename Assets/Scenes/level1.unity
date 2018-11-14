@@ -224,7 +224,7 @@ Prefab:
     - target: {fileID: 114158932092013242, guid: f8d66cdfa74b137488f705e740d9bc1d,
         type: 2}
       propertyPath: m_FontData.m_FontSize
-      value: 24
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 114158932092013242, guid: f8d66cdfa74b137488f705e740d9bc1d,
         type: 2}
@@ -244,27 +244,27 @@ Prefab:
     - target: {fileID: 114613255644359070, guid: f8d66cdfa74b137488f705e740d9bc1d,
         type: 2}
       propertyPath: m_FontData.m_FontSize
-      value: 30
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 114613255644359070, guid: f8d66cdfa74b137488f705e740d9bc1d,
         type: 2}
       propertyPath: m_FontData.m_MinSize
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 224488019646249816, guid: f8d66cdfa74b137488f705e740d9bc1d,
         type: 2}
       propertyPath: m_SizeDelta.y
-      value: 42.3
+      value: 28.59
       objectReference: {fileID: 0}
     - target: {fileID: 224488019646249816, guid: f8d66cdfa74b137488f705e740d9bc1d,
         type: 2}
       propertyPath: m_SizeDelta.x
-      value: 163.4
+      value: 140.54
       objectReference: {fileID: 0}
     - target: {fileID: 224488019646249816, guid: f8d66cdfa74b137488f705e740d9bc1d,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: -113.1
+      value: -106.24
       objectReference: {fileID: 0}
     - target: {fileID: 224820096971640208, guid: f8d66cdfa74b137488f705e740d9bc1d,
         type: 2}
@@ -279,7 +279,7 @@ Prefab:
     - target: {fileID: 114709865377454482, guid: f8d66cdfa74b137488f705e740d9bc1d,
         type: 2}
       propertyPath: m_FontData.m_FontSize
-      value: 24
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 114709865377454482, guid: f8d66cdfa74b137488f705e740d9bc1d,
         type: 2}
@@ -299,7 +299,17 @@ Prefab:
     - target: {fileID: 114709865377454482, guid: f8d66cdfa74b137488f705e740d9bc1d,
         type: 2}
       propertyPath: m_Text
-      value: 'HighScore: 0'
+      value: 'Highscore: 0'
+      objectReference: {fileID: 0}
+    - target: {fileID: 114613255644359070, guid: f8d66cdfa74b137488f705e740d9bc1d,
+        type: 2}
+      propertyPath: m_Text
+      value: New Game
+      objectReference: {fileID: 0}
+    - target: {fileID: 224488019646249816, guid: f8d66cdfa74b137488f705e740d9bc1d,
+        type: 2}
+      propertyPath: m_AnchoredPosition.x
+      value: 714
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f8d66cdfa74b137488f705e740d9bc1d, type: 2}
@@ -362,7 +372,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &301927088
 RectTransform:
   m_ObjectHideFlags: 0
