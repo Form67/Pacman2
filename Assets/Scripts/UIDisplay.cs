@@ -10,7 +10,7 @@ public class UIDisplay : MonoBehaviour {
     public Text scoreText;
     public Text highScoreText;
 
-    int visibleCount = 2;
+    int visibleCount = 3;
 
     [HideInInspector]
     public int score;
@@ -23,7 +23,7 @@ public class UIDisplay : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 
-        for (int i = 0; i < transform.childCount-1; i++)
+        for (int i = 0; i < transform.childCount; i++)
         {
             lifeSprites.Add(transform.GetChild(i).gameObject);
         }
@@ -88,10 +88,10 @@ public class UIDisplay : MonoBehaviour {
 
     public void IncrementScore(int inc)
     {
-        score += inc;
+        score += 2000;
 
         // Gain a extra life every 10,000 points
-        if (score >= extraLifeThreshold && visibleCount < 2)
+        if (score >= extraLifeThreshold && visibleCount < 3)
         {
             mapGen.IncLife();
             visibleCount++;
@@ -125,7 +125,7 @@ public class UIDisplay : MonoBehaviour {
         foreach (GameObject child in lifeSprites)
             child.SetActive(true);
 
-        visibleCount = 2;
+        visibleCount = 3;
     }
 
 }
