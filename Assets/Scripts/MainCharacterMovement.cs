@@ -38,11 +38,11 @@ public class MainCharacterMovement : MonoBehaviour {
 
         string path = "Assets/TextFiles/highscore.txt";
         StreamReader reader = new StreamReader(path);
-        string rawText = reader.ReadToEnd();
-        if (rawText.Length == 0)
+        string parsedText = reader.ReadToEnd().Trim();
+        if (parsedText.Length == 0)
             highScore = 0;
         else
-            highScore = int.Parse(rawText.Substring(0,1));
+            highScore = int.Parse(parsedText);
         scoreText2.text = "Highscore: " +highScore;
         reader.Close();
     }
@@ -151,7 +151,8 @@ public class MainCharacterMovement : MonoBehaviour {
             }
             else
             {
-                FindObjectOfType<mapGenerator>().DecLives();
+                mapGenerator mapGen = FindObjectOfType<mapGenerator>();
+                mapGen.DecLives();
 
                 GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
 
@@ -162,7 +163,15 @@ public class MainCharacterMovement : MonoBehaviour {
                 dead = true;
                 GetComponent<Animator>().SetBool("Dead", true);
                 GetComponent<CircleCollider2D>().enabled = false;
+
+                StartCoroutine(Respawn());
             }
         }
+    }
+
+    IEnumerator Respawn()
+    {
+        yield return new WaitForSeconds(2.0f);
+        FindObjectOfType<mapGenerator>().SoftResetGame();
     }
 }

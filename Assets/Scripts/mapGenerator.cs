@@ -31,6 +31,7 @@ public class mapGenerator : MonoBehaviour {
     PathFinding path;
     LivesDisplay livesDisp;
     int lives = 3;
+    public int score = 0;
 
     void Start()
     {
@@ -98,6 +99,7 @@ public class mapGenerator : MonoBehaviour {
 					board [boardHeight] [i] = Instantiate (emptyCell, currLevel.transform);
 					GameObject pacmanSpawned = Instantiate (pacman, currLevel.transform);
 					pacmanSpawned.transform.position = new Vector3 (topLeftX + cellSize * i, topLeftY - cellSize * boardHeight);
+                    pacmanSpawned.GetComponent<MainCharacterMovement>().score = score;
 
                 } 
 				board [boardHeight] [i].transform.position = new Vector3 (topLeftX + cellSize * i, topLeftY - cellSize * boardHeight);
@@ -111,10 +113,6 @@ public class mapGenerator : MonoBehaviour {
         /**/
         OrientWalls ();
 
-        if(lives == 3)
-            livesDisp.ResetLives();
-        else
-            livesDisp.SetDisplay(lives);
 
         // Send new board to pathfinding algo
         path.InitGraph(new List<GameObject[]>(board));
@@ -295,16 +293,41 @@ public class mapGenerator : MonoBehaviour {
 
 	public void ResetGame(){
 		GameObject currLevel = GameObject.FindGameObjectWithTag ("level");
-		if (currLevel != null) {
-			string path = "Assets/TextFiles/highscore.txt";
-			StreamWriter wr = new StreamWriter(path);
-
-			wr.Write(GameObject.FindGameObjectWithTag("pacman").GetComponent<MainCharacterMovement>().score);
-			wr.Close();
+        if (currLevel != null) {
+            string path = "Assets/TextFiles/highscore.txt";
+            StreamWriter wr = new StreamWriter(path);
+            SetScore(GameObject.FindGameObjectWithTag("pacman").GetComponent<MainCharacterMovement>().score);
+            wr.Write(score);
+            wr.Close();
 			Destroy (currLevel);
+            score = 0;
 		}
+
+
+        lives = 3;
+        livesDisp.ResetLives();
         Begin ();
 	}
+
+    // Do not save or reset scores
+    public void SoftResetGame()
+    {
+        if (lives == 0)
+        {
+            ResetGame();
+            return;
+        }
+
+        GameObject currLevel = GameObject.FindGameObjectWithTag("level");
+        if (currLevel != null)
+        {
+            Destroy(currLevel);
+        }
+
+        livesDisp.SetDisplay(lives);
+
+        Begin();
+    }
 
 	void ResetLevel(){
 		GameObject currLevel = GameObject.FindGameObjectWithTag ("level");
@@ -312,7 +335,8 @@ public class mapGenerator : MonoBehaviour {
 		MainCharacterMovement pacmanScript = pacmanSpawned.GetComponent<MainCharacterMovement> ();
         string path = "Assets/TextFiles/highscore.txt";
         StreamWriter wr = new StreamWriter(path);
-        wr.Write(GameObject.FindGameObjectWithTag("pacman").GetComponent<MainCharacterMovement>().score);
+        SetScore(pacmanScript.score);
+        wr.Write(score);
         wr.Close();
         int currScore = pacmanScript.score;
 		Destroy (pacmanSpawned);
@@ -365,5 +389,11 @@ public class mapGenerator : MonoBehaviour {
         {
             lives = 3;
         }
+    }
+
+    public void SetScore(int s)
+    {
+        if (s > score)
+            score = s;
     }
 }
