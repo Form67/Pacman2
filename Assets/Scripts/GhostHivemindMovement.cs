@@ -422,4 +422,38 @@ public class GhostHivemindMovement : MonoBehaviour {
         }
         return Direction.None;
     }
+
+    Direction FlipDirection(Direction direction)
+    {
+        switch (direction)
+        {
+            case (Direction.Up):
+                return Direction.Down;
+            case (Direction.Down):
+                return Direction.Up;
+            case (Direction.Left):
+                return Direction.Right;
+            case (Direction.Right):
+                return Direction.Left;
+        }
+        return Direction.None;
+    }
+    /*
+    void HandleCollisions()
+    {
+        Node frontNode = pathFinder.GetNodeInDirection(currentNode, direction);
+
+        foreach (UpdatedGhostMovement ghost in ghostsList)
+        {
+            if (this.currentNode == ghost.currentNode || frontNode == ghost.currentNode)
+            {
+                ghost.FlipDirection();
+                ghost.ResetLerpTime();
+
+                this.FlipDirection();
+                this.ResetLerpTime();
+            }
+        }
+    }
+    */
 }
