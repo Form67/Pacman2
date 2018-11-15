@@ -191,7 +191,7 @@ public class PathFinding : MonoBehaviour {
 		List<Node> neighbors = GetNeighbors (node);
 		List<Node> nonWallNeighbors = new List<Node> ();
 		foreach (Node neighbor in neighbors) {
-			if (!neighbor.isWall) {
+			if (!neighbor.isWall || !isHouseExit(neighbor)) {
 				nonWallNeighbors.Add (neighbor);
 			}
 		}
