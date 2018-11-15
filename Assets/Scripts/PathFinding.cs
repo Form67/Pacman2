@@ -62,6 +62,7 @@ public class PathFinding : MonoBehaviour {
             // Visit all the neighbors of the current node
             List<Node> neighbors = GetNeighbors(currentNode);
 
+          
             // Check all the neighbors of the currrentNode
             foreach (Node neighbor in neighbors)
             {
@@ -189,4 +190,31 @@ public class PathFinding : MonoBehaviour {
 		}
 		return numPathNeighbors > 2;
 	}
+
+	public bool IsNodeTurnable(Node node){
+		if (node.isWall) {
+			return false;
+		}
+		List<Node> neighbors = GetNeighbors (node);
+		List<Node> nonWallNeighbors = new List<Node> ();
+		foreach (Node neighbor in neighbors) {
+			if (!neighbor.isWall) {
+				nonWallNeighbors.Add (neighbor);
+			}
+		}
+
+		if (nonWallNeighbors.Count > 2) {
+			return true;
+		} 
+		if (nonWallNeighbors.Count <= 1) {
+			return false;
+		}
+		return nonWallNeighbors [0].gridX != nonWallNeighbors [1].gridX && nonWallNeighbors [0].gridY != nonWallNeighbors [1].gridY;
+
+	}
+
+    bool isHouseExit(Node n)
+    {
+        return ((n.gridY == 13 || n.gridY == 14) && n.gridX == 12);
+    }
 }
