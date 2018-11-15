@@ -28,6 +28,8 @@ public class PathFinding : MonoBehaviour {
     // A-Star path finding algorithm
     public List<Node> AStar(Node start, Node target)
     {
+        print("Find a path from " + start.ToString() + " " + target.ToString() + " " + direction);
+
         List<Node> openList = new List<Node>();   // List of discovered nodes that haven't been evaluated yet
         List<Node> closedList = new List<Node>(); // List of nodes that have already been evaluated
 
@@ -70,6 +72,18 @@ public class PathFinding : MonoBehaviour {
                 if (neighbor.isWall || closedList.Contains(neighbor))
                     continue;
 
+                // Igonre the node directly behind the ghost, if not looping 
+                if(currentNode == start && start != target)
+                {
+                    Node behind = GetNodeInDirection(start, GetOppDirection(direction));  // the node is behind the player
+
+                    if (IsNodeIntersection(start) && neighbor == behind)
+                    {
+                        print(neighbor.gridY + " " + neighbor.gridX + " is behind the player at " + start.gridY + " " + start.gridX + " direction " + direction);
+                        continue;
+                    }
+                }
+
                 // Distance from start to neighbor (the f cost)
                 int cost = currentNode.gCost + ManhattanDistance(currentNode, neighbor);
 
@@ -110,6 +124,14 @@ public class PathFinding : MonoBehaviour {
         path.Add(currentNode);  // add the start node
 
         path.Reverse();
+
+        string line = "";
+        foreach(Node p in path)
+        {
+            line += " (" + p.gridY + ", " + p.gridX + ")";
+        }
+
+        print("Path: " + line);
         return path;
     }
 

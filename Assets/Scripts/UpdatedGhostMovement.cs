@@ -95,13 +95,15 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 			direction = Direction.Left;
 		} else if (rbody.velocity.normalized == Vector2.right) {
 			direction = Direction.Right;
-		}
+        }
+        //else { print(dir); }
+        
 
 		Node currentNode = pathFinder.WorldPosToNode(transform.position);
 		CheckForFutureCollisions ();
 		if(pathFinder.IsNodeTurnable(currentNode) || pathFinder.GetNodeInDirection(currentNode, direction).isWall){
-			
-			switch (currentState) {
+            print(pathFinder.IsNodeTurnable(currentNode) + " " + currentNode.gridY + " " + currentNode.gridX);
+            switch (currentState) {
 			case State.CHASE:
 				DetermineTargetForChase ();
 			
@@ -159,7 +161,16 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 	}
 
 	Vector3 PathFollow(){
-		return StaticSeek (transform.position, currentPath.Count > 1 ? currentPath [1].pos : currentPath[0].pos);
+		if (currentPath.Count == 0) {
+			return Vector3.zero;
+		}
+
+        if (currentPath.Count > 1)
+            print("Seeking: " + currentPath[1].gridY + ", " + currentPath[1].gridX);
+        else
+            print("Seeking: " + currentPath[0].gridY + ", " + currentPath[0].gridX);
+
+        return StaticSeek (transform.position, currentPath.Count > 1 ? currentPath [1].pos : currentPath[0].pos);
 	}
 
 	Vector3 StaticSeek(Vector3 position, Vector3 target){
