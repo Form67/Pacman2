@@ -27,7 +27,7 @@ public class PathFinding : MonoBehaviour {
     }
 
     // A-Star path finding algorithm
-    public List<Node> AStar(Node start, Node target, Direction dir = Direction.None)
+    public List<Node> AStar(Node start, Node target)
     {
         List<Node> openList = new List<Node>();   // List of discovered nodes that haven't been evaluated yet
         List<Node> closedList = new List<Node>(); // List of nodes that have already been evaluated
