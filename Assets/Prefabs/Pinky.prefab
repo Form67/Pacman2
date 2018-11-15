@@ -117,6 +117,7 @@ MonoBehaviour:
   maxVelocity: 2
   frightenedVelocity: 2
   frightenedTime: 7
+  speed: 0.05
   closeEnoughDistance: 0.1
   lookAheadIndexesForCollision: 2
   lerpTime: 0
