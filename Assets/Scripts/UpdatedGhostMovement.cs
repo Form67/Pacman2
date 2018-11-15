@@ -103,13 +103,12 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
             }
         }
 
-        HandleCollisions();
 
         if (lerpTime > 1f)
         {
             currentNode = pathFinder.GetNodeInDirection(currentNode, direction);
         }
-
+        
         CheckForFutureCollisions();
         if ((pathFinder.IsNodeTurnable(currentNode) || pathFinder.GetNodeInDirection(currentNode, direction).isWall) && (lerpTime > 1f || lerpTime == 0f )){
            
@@ -228,22 +227,39 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 		//rbody.velocity = rbody.velocity.normalized * frightenedVelocity;
 	}
 
-	void CheckForFutureCollisions(){
-		if (currentPath != null) {
-			foreach (UpdatedGhostMovement ghostScript in ghostsList) {
-				if (ghostScript.currentPath != null) {
-					for (int i = 0; i < lookAheadIndexesForCollision; ++i) {
-						for (int j = 0; j < lookAheadIndexesForCollision; ++j) {
-							if (currentPath [i] == ghostScript.currentPath [j]) {
-                                FlipDirection();
-								return;
-							}
-						}
-					}
-				}
-			}
-		}
-	}
+    //void CheckForFutureCollisions(){
+    //	if (currentPath != null) {
+    //		foreach (UpdatedGhostMovement ghostScript in ghostsList) {
+    //			if (ghostScript.currentPath != null) {
+    //				for (int i = 0; i < lookAheadIndexesForCollision; ++i) {
+    //					for (int j = 0; j < lookAheadIndexesForCollision; ++j) {
+    //						if (currentPath [i] == ghostScript.currentPath [j]) {
+    //                               FlipDirection();
+    //							return;
+    //						}
+    //					}
+    //				}
+    //			}
+    //		}
+    //	}
+    //}
+    
+    protected void CheckForFutureCollisions()
+    {
+        Node frontNode = pathFinder.GetNodeInDirection(currentNode, direction);
+
+        foreach (UpdatedGhostMovement ghost in ghostsList)
+        {
+            if (this.currentNode == ghost.currentNode || frontNode == ghost.currentNode)
+            {
+                ghost.FlipDirection();
+                ghost.ResetLerpTime();
+
+                this.FlipDirection();
+                this.ResetLerpTime();
+            }
+        }
+    }
 
     void FlipDirection() {
         switch (direction) {
@@ -297,21 +313,10 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 
 	abstract protected void GetScatterTarget ();
 
-    protected void HandleCollisions()
+
+    public void Eaten()
     {
-        Node frontNode = pathFinder.GetNodeInDirection(currentNode, direction); 
 
-        foreach(UpdatedGhostMovement ghost in ghostsList)
-        {
-            if (this.currentNode == ghost.currentNode || frontNode == ghost.currentNode)
-            {
-                ghost.FlipDirection();
-                ghost.ResetLerpTime();
-
-                this.FlipDirection();
-                this.ResetLerpTime();
-            }
-        }
     }
 
 }
