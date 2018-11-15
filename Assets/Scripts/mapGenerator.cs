@@ -30,6 +30,8 @@ public class mapGenerator : MonoBehaviour {
 	private bool started = false;
 	public GameObject level;
 
+    Vector3 originalPacmanPosition;
+
     PathFinding path;
     UIDisplay ui;
     int lives = 3;
@@ -100,8 +102,9 @@ public class mapGenerator : MonoBehaviour {
 				} else if (c == 'M') {
 					board [boardHeight] [i] = Instantiate (emptyCell, currLevel.transform);
 					GameObject pacmanSpawned = Instantiate (pacman, currLevel.transform);
+                    
 					pacmanSpawned.transform.position = new Vector3 (topLeftX + cellSize * i, topLeftY - cellSize * boardHeight);
-
+                    originalPacmanPosition = pacmanSpawned.transform.position;
                 } 
 				board [boardHeight] [i].transform.position = new Vector3 (topLeftX + cellSize * i, topLeftY - cellSize * boardHeight);
 
@@ -335,15 +338,20 @@ public class mapGenerator : MonoBehaviour {
             return;
         }
 
-        GameObject currLevel = GameObject.FindGameObjectWithTag("level");
-        if (currLevel != null)
-        {
-            Destroy(currLevel);
-        }
-
         ui.SetDisplay(lives);
 
-        Begin();
+        ResetAgents();
+    }
+
+    void ResetAgents()
+    {
+        GameObject currLevel = GameObject.FindGameObjectWithTag("level");
+        GameObject pacmanSpawned = Instantiate(pacman, currLevel.transform);
+        pacmanSpawned.transform.position = originalPacmanPosition;
+        foreach (GameObject ghost in GameObject.FindGameObjectsWithTag("ghost"))
+        {
+            ghost.GetComponent<UpdatedGhostMovement>().Reset();
+        }
     }
 
 	void ResetLevel(){

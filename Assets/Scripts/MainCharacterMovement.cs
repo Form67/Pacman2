@@ -24,6 +24,8 @@ public class MainCharacterMovement : MonoBehaviour {
     protected PathFinding pathFinder;
     int ghostScore = 100;
 
+    Vector3 originalPosition;
+
     bool intersect;
     mapGenerator map;
     UIDisplay ui;
@@ -40,7 +42,7 @@ public class MainCharacterMovement : MonoBehaviour {
         currentNode = pathFinder.WorldPosToNode(transform.position);
         targetNode = currentNode;
         intersect = (pathFinder.IsNodeIntersection(targetNode));
-
+        originalPosition = transform.position;
         //old code
         dead = false;
         GetComponent<CircleCollider2D>().enabled = true; 
@@ -209,4 +211,5 @@ public class MainCharacterMovement : MonoBehaviour {
         yield return new WaitForSeconds(2.0f);
         FindObjectOfType<mapGenerator>().SoftResetGame();
     }
+
 }

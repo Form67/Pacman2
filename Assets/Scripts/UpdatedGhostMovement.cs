@@ -49,7 +49,7 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
     protected GameObject pacman;
 
     public float lerpTime;
-    int currentIndexOnPath;
+   
 
     [HideInInspector]
     public Node currentNode;
@@ -57,8 +57,11 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
     public bool respawn = false;
 
     bool justBeenFlipped;
+
+    Vector3 originalPosition;
     // Use this for initialization
     protected void Start() {
+        originalPosition = transform.position;
         direction = Direction.Up;
         if (exitTime == 0f)
         {
@@ -71,6 +74,7 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
         currentEndIndex = 0;
         startTime = Time.time;
         startExitTime = Time.time;
+        lerpTime = 0f;
         pacman = GameObject.FindGameObjectWithTag("pacman");
         //rbody = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
@@ -82,7 +86,7 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
             }
         }
         pathFinder = GameObject.FindGameObjectWithTag("pathfinding").GetComponent<PathFinding>();
-        currentIndexOnPath = 0;
+        
         currentNode = pathFinder.WorldPosToNodeIncludingGhostHouse(transform.position);
         justBeenFlipped = false;
     }
@@ -181,7 +185,7 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
                     case State.SCATTER:
                         GetScatterTarget();
                         currentPath = pathFinder.AStar(currentNode, targetPoint, direction);
-                        currentIndexOnPath = 0;
+                 
                         direction = GetDirectionBetweenNodes(currentNode, currentPath[1]);
                         break;
                     default:
@@ -365,5 +369,25 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
     abstract protected void DetermineTargetForChase ();
 
 	abstract protected void GetScatterTarget ();
+
+    public void Reset()
+    {
+        transform.position = originalPosition;
+        direction = Direction.Up;
+        if (exitTime == 0f)
+        {
+            currentState = waveStates[0];
+        }
+        else
+            currentState = State.DEFAULT;
+
+        currentEndTime = waveEndTimes.Length > 0 ? waveEndTimes[0] : -1f;
+        currentEndIndex = 0;
+        startTime = Time.time;
+        startExitTime = Time.time;
+        currentNode = pathFinder.WorldPosToNodeIncludingGhostHouse(transform.position);
+        justBeenFlipped = false;
+        lerpTime = 0f;
+    }
 
 }
