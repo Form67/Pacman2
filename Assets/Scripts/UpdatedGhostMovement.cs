@@ -56,6 +56,7 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
     [HideInInspector]
     public bool respawn = false;
 
+    bool justBeenFlipped;
     // Use this for initialization
     protected void Start() {
         direction = Direction.Up;
@@ -83,10 +84,12 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
         pathFinder = GameObject.FindGameObjectWithTag("pathfinding").GetComponent<PathFinding>();
         currentIndexOnPath = 0;
         currentNode = pathFinder.WorldPosToNodeIncludingGhostHouse(transform.position);
+        justBeenFlipped = false;
     }
 
     // Update is called once per frame
     void Update() {
+        justBeenFlipped = false;
         if (currentState != State.DEFAULT)
         {
             if (pacman == null)
@@ -129,7 +132,7 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
             }
 
             HandleCollisions();
-            if ((pathFinder.IsNodeTurnable(currentNode, respawn) || pathFinder.GetNodeInDirection(currentNode, direction).isWall) && (lerpTime > 1f || lerpTime == 0f))
+            if ((pathFinder.IsNodeTurnable(currentNode, respawn) || pathFinder.GetNodeInDirection(currentNode, direction).isWall) && (lerpTime > 1f || lerpTime == 0f) && !justBeenFlipped)
             {
                 switch (currentState)
                 {
@@ -278,6 +281,7 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
     }
 
     void FlipDirection() {
+        justBeenFlipped = true;
         switch (direction) {
             case (Direction.Up):
                 direction = Direction.Down;
@@ -294,20 +298,27 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
             default:
                 break;
         }
-        switch (direction)
+        if(pathFinder.GetNodeInDirection(currentNode, direction).isWall)
         {
-            case (Direction.Right):
-                animator.SetTrigger("goright");
-                break;
-            case (Direction.Left):
-                animator.SetTrigger("goleft");
-                break;
-            case (Direction.Up):
-                animator.SetTrigger("goup");
-                break;
-            case (Direction.Down):
-                animator.SetTrigger("godown");
-                break;
+            direction = Direction.Down;
+        }
+        if (currentState != State.FRIGHTENED)
+        {
+            switch (direction)
+            {
+                case (Direction.Right):
+                    animator.SetTrigger("goright");
+                    break;
+                case (Direction.Left):
+                    animator.SetTrigger("goleft");
+                    break;
+                case (Direction.Up):
+                    animator.SetTrigger("goup");
+                    break;
+                case (Direction.Down):
+                    animator.SetTrigger("godown");
+                    break;
+            }
         }
     }
 
