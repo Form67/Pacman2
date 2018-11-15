@@ -111,37 +111,46 @@ public class GhostHivemindMovement : MonoBehaviour {
     int currentEndIndex;
 
 	PathFinding pathFinder;
+    bool initialized = false;
 
 	// Use this for initialization
-	void Start () {
-		ghostMap = new Dictionary<string, GhostData> ();
+	public void Init () {
+        print("init");
+
+        pathFinder = GameObject.FindGameObjectWithTag("pathfinding").GetComponent<PathFinding>();
+        ghostMap = new Dictionary<string, GhostData> ();
 
 		GameObject blinky = GameObject.Find("Blinky(Clone)");
 		GameObject inky = GameObject.Find("Inky(Clone)");
 		GameObject pinky = GameObject.Find("Pinky(Clone)");
 		GameObject clyde = GameObject.Find("Clyde(Clone)");
 
-		ghostMap.Add ("blinky", new GhostData ("blinky", blinky, waveStates [0], blinky.GetComponent<Animator> (), pathFinder));
-		ghostMap.Add ("inky", new GhostData ("inky", inky, waveStates [0], inky.GetComponent<Animator> (), pathFinder));
+		//ghostMap.Add ("blinky", new GhostData ("blinky", blinky, waveStates [0], blinky.GetComponent<Animator> (), pathFinder));
+		//ghostMap.Add ("inky", new GhostData ("inky", inky, waveStates [0], inky.GetComponent<Animator> (), pathFinder));
 		ghostMap.Add ("pinky", new GhostData ("pinky", pinky, waveStates [0], pinky.GetComponent<Animator> (), pathFinder));
-		ghostMap.Add ("clyde", new GhostData ("clyde", clyde, waveStates [0], clyde.GetComponent<Animator> (), pathFinder));
+		//ghostMap.Add ("clyde", new GhostData ("clyde", clyde, waveStates [0], clyde.GetComponent<Animator> (), pathFinder));
 
 		pacman = GameObject.FindGameObjectWithTag ("pacman");
 		pacmanNode = pathFinder.WorldPosToNode (pacman.transform.position);
-		pathFinder = GameObject.FindGameObjectWithTag ("pathfinding").GetComponent<PathFinding> ();
 		frightenedTime = pacman.GetComponent<MainCharacterMovement> ().invincibleTimer;
 
 		currentEndTime = waveEndTimes.Length > 0 ? waveEndTimes [0] : -1f;
         currentEndIndex = 0;
+
+        initialized = true;
 	}
 	
 	// Update is called once per frame
 	void Update () {
+        if (!initialized)
+            return;
+
         if(pacman == null)
         {
             pacman = GameObject.FindGameObjectWithTag("pacman");
         }
-		pacmanNode = pathFinder.WorldPosToNode (pacman.transform.position);
+        
+        pacmanNode = pathFinder.WorldPosToNode (pacman.transform.position);
         
 
         foreach (GhostData data in ghostMap.Values)
