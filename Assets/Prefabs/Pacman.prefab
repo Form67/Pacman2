@@ -108,14 +108,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 681c62e1c62043744a68bb3000577497, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  velocity: 1
-  direction: 0
-  currVelocity: 0
+  velocity: 3.5
+  currVelocity: 1
   dead: 0
   score: 0
   highScore: 0
   scoreText: {fileID: 0}
   scoreText2: {fileID: 0}
+  direction: 0
+  lerpCycle: 0
   invDurationPerPellet: 10
   invincibleTimer: 0
   isInvincible: 0
