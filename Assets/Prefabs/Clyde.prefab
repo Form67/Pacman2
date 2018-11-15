@@ -73,7 +73,7 @@ CircleCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: -0.003913462, y: 0}
@@ -114,11 +114,13 @@ MonoBehaviour:
   - 5
   - 5
   - 5
-  maxVelocity: 0.5
+  maxVelocity: 3
   frightenedVelocity: 2
   frightenedTime: 7
   closeEnoughDistance: 0.05
-  lookAheadIndexesForCollision: 2
+  exitTime: 10
+  lerpTime: 0
+  respawn: 0
 --- !u!212 &212977736067418928
 SpriteRenderer:
   m_ObjectHideFlags: 1
