@@ -7,7 +7,7 @@ public class PinkyScript : UpdatedGhostMovement {
 	protected override void DetermineTargetForChase() {
 		
 		Node pacmanGoalNode = pathFinder.WorldPosToNode(pacman.transform.position);
-
+        
 		if(pacman.transform.eulerAngles.z == 90) {
 			if (pacmanGoalNode.gridX > 3) {
 				pacmanGoalNode = pathFinder.grid[pacmanGoalNode.gridX - 4][pacmanGoalNode.gridY];
@@ -33,9 +33,9 @@ public class PinkyScript : UpdatedGhostMovement {
 				pacmanGoalNode = pathFinder.grid[pacmanGoalNode.gridX][0];
 			}
 		}
-
-		targetPoint = pathFinder.WorldPosToNode(pacmanGoalNode.pos);
-
+       
+        targetPoint = pathFinder.WorldPosToNode(pacmanGoalNode.pos);
+        
 	}
 
 	protected override void GetScatterTarget() {

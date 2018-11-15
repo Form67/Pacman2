@@ -11,95 +11,99 @@ public enum State {
 }
 
 public abstract class UpdatedGhostMovement : MonoBehaviour {
-		
-	public State[] waveStates;
-	//Should be of one size lower than waveStates
-	public float[] waveEndTimes;
 
-	public float maxVelocity;
+    public State[] waveStates;
+    //Should be of one size lower than waveStates
+    public float[] waveEndTimes;
 
-	public float frightenedVelocity;
+    public float maxVelocity;
 
-	public float frightenedTime;
+    public float frightenedVelocity;
 
-	Animator animator;
+    public float frightenedTime;
+
+    Animator animator;
     Direction direction;
 
     public float closeEnoughDistance;
 
-	public int lookAheadIndexesForCollision;
+    public int lookAheadIndexesForCollision;
 
-	State currentState;
-	float startTime;
-	float currentEndTime;
-	int currentEndIndex = 0;
+    State currentState;
+    float startTime;
+    float currentEndTime;
+    int currentEndIndex = 0;
 
-	protected Node targetPoint;
+    protected Node targetPoint;
 
-	protected PathFinding pathFinder;
+    protected PathFinding pathFinder;
 
-	[HideInInspector]
-	public List<Node> currentPath;
+    [HideInInspector]
+    public List<Node> currentPath;
 
-	List<UpdatedGhostMovement> ghostsList;
+    List<UpdatedGhostMovement> ghostsList;
 
-	Rigidbody2D rbody;
+    Rigidbody2D rbody;
 
     protected GameObject pacman;
 
     public float lerpTime;
+    int currentIndexOnPath;
     Node currentNode;
-	// Use this for initialization
-	protected void Start () {
+    // Use this for initialization
+    protected void Start() {
         direction = Direction.Up;
-        currentState = waveStates [0];
-		currentEndTime = waveEndTimes.Length > 0 ? waveEndTimes [0] : -1f;
-		currentEndIndex = 0;
-		startTime = Time.time;
+        currentState = waveStates[0];
+        currentEndTime = waveEndTimes.Length > 0 ? waveEndTimes[0] : -1f;
+        currentEndIndex = 0;
+        startTime = Time.time;
         pacman = GameObject.FindGameObjectWithTag("pacman");
-		rbody = GetComponent<Rigidbody2D> ();
-		animator = GetComponent<Animator> ();
-		GameObject[] ghosts = GameObject.FindGameObjectsWithTag ("ghost");
-		ghostsList = new List<UpdatedGhostMovement> ();
-		foreach (GameObject ghost in ghosts) {
-			if (ghost != gameObject) {
-				ghostsList.Add (ghost.GetComponent<UpdatedGhostMovement> ());
-			}
-		}
-		pathFinder = GameObject.FindGameObjectWithTag ("pathfinding").GetComponent<PathFinding> ();
-	}
-	
-	// Update is called once per frame
-	void Update () {
+        rbody = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
+        GameObject[] ghosts = GameObject.FindGameObjectsWithTag("ghost");
+        ghostsList = new List<UpdatedGhostMovement>();
+        foreach (GameObject ghost in ghosts) {
+            if (ghost != gameObject) {
+                ghostsList.Add(ghost.GetComponent<UpdatedGhostMovement>());
+            }
+        }
+        pathFinder = GameObject.FindGameObjectWithTag("pathfinding").GetComponent<PathFinding>();
+        currentIndexOnPath = 0;
+    }
+
+    // Update is called once per frame
+    void Update() {
         currentNode = pathFinder.WorldPosToNode(transform.position);
-        lerpTime += Time.deltaTime;
+
         if (pacman == null)
         {
             pacman = GameObject.FindGameObjectWithTag("pacman");
         }
         if (Time.time - startTime >= currentEndTime && currentEndTime != -1f && currentState != State.FRIGHTENED) {
-			currentEndIndex++;
-			currentEndTime = waveEndTimes.Length > currentEndIndex ? waveEndTimes [currentEndIndex] : -1f;
-			currentState = waveStates [currentEndIndex];
-			startTime = Time.time;
-		} else if (Time.time - startTime >= frightenedTime && currentState == State.FRIGHTENED) {
-			currentState = waveStates [currentEndIndex];
-			startTime = Time.time;
-			animator.SetBool ("flash", false);
-			rbody.velocity = rbody.velocity.normalized * maxVelocity;
-		}
+            currentEndIndex++;
+            currentEndTime = waveEndTimes.Length > currentEndIndex ? waveEndTimes[currentEndIndex] : -1f;
+            currentState = waveStates[currentEndIndex];
+            startTime = Time.time;
+        } else if (Time.time - startTime >= frightenedTime && currentState == State.FRIGHTENED) {
+            currentState = waveStates[currentEndIndex];
+            startTime = Time.time;
+            animator.SetBool("flash", false);
+            rbody.velocity = rbody.velocity.normalized * maxVelocity;
+        }
 
-        Vector3 velocity;
 
-		CheckForFutureCollisions ();
-		if(pathFinder.IsNodeTurnable(currentNode) || pathFinder.GetNodeInDirection(currentNode, direction).isWall){
-            //print(pathFinder.IsNodeTurnable(currentNode) + " " + currentNode.gridY + " " + currentNode.gridX);
+
+        CheckForFutureCollisions();
+        if ((pathFinder.IsNodeTurnable(currentNode) || pathFinder.GetNodeInDirection(currentNode, direction).isWall) && (lerpTime > 1f || lerpTime == 0f )){
+           
 			switch (currentState) {
 			case State.CHASE:
 				DetermineTargetForChase ();
 			
 				currentPath = pathFinder.AStar (pathFinder.WorldPosToNode (transform.position), targetPoint, direction);
-				transform.position = PathFollow ();
+
+                currentIndexOnPath = 0;
+                direction = GetDirectionBetweenNodes(currentNode, currentPath[1]);
 				break;
 			case State.FRIGHTENED:
 				currentPath = null;
@@ -123,16 +127,17 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 						}
 					}
 				}
-				velocity = possibleVelocities [Random.Range (0, possibleVelocities.Count)];
+				//velocity = possibleVelocities [Random.Range (0, possibleVelocities.Count)];
 
 				break;
 			case State.SCATTER:
 				GetScatterTarget ();
 				currentPath = pathFinder.AStar (pathFinder.WorldPosToNode (transform.position), targetPoint, direction);
-				transform.position = PathFollow ();
-				break;
+                    currentIndexOnPath = 0;
+                    direction = GetDirectionBetweenNodes(currentNode, currentPath[1]);
+                    break;
 			default:
-				velocity = Vector3.zero;
+				
 				break;
 			}
 			//rbody.velocity = velocity;
@@ -149,20 +154,28 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 			}
 
 		}
-	}
+        transform.position = PathFollow();
+        lerpTime += Time.deltaTime;
+    }
 
 	Vector3 PathFollow(){
-		if (currentPath.Count == 0) {
-			return transform.position;
-		}
-		return KinematicSeek (currentPath[0].pos, currentPath.Count > 1 ? currentPath [1].pos : currentPath[0].pos);
+		if(lerpTime > 1f)
+        {
+            currentIndexOnPath++;
+        }
+
+        Node target = pathFinder.GetNodeInDirection(currentNode, direction);
+
+		return KinematicSeek (currentPath[currentIndexOnPath].pos, currentPath[currentIndexOnPath + 1].pos);
 	}
 
 	Vector3 StaticSeek(Vector3 position, Vector3 target){
 		return (target - position).normalized * maxVelocity;
 	}
     Vector3 KinematicSeek(Vector3 position, Vector3 target) {
-        if (lerpTime > 1f) lerpTime = 0f;
+        if (lerpTime > 1f) {
+            lerpTime = 0f;
+            }
         return Vector3.Lerp(position, target,lerpTime);
     }
 	protected void SetTargetPointPoint (Node point){
@@ -184,7 +197,7 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 					for (int i = 0; i < lookAheadIndexesForCollision; ++i) {
 						for (int j = 0; j < lookAheadIndexesForCollision; ++j) {
 							if (currentPath [i] == ghostScript.currentPath [j]) {
-								rbody.velocity = -rbody.velocity;
+                                FlipDirection();
 								return;
 							}
 						}
@@ -193,6 +206,49 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 			}
 		}
 	}
+
+    void FlipDirection() {
+        switch (direction) {
+            case (Direction.Up):
+                direction = Direction.Down;
+                break;
+            case (Direction.Down):
+                direction = Direction.Up;
+                break;
+            case (Direction.Left):
+                direction = Direction.Right;
+                break;
+            case (Direction.Right):
+                direction = Direction.Left;
+                break;
+            default:
+                break;
+        }
+    }
+
+    Direction GetDirectionBetweenNodes(Node first, Node second) {
+        if(first.gridX == second.gridX) {
+            if(first.gridY == second.gridY - 1) {
+                return Direction.Right;
+            }
+            if(first.gridY == second.gridY + 1) {
+                return Direction.Left;
+            }
+        }
+        if (first.gridY == second.gridY)
+        {
+            if (first.gridX == second.gridX - 1)
+            {
+                return Direction.Down;
+            }
+            if (first.gridX == second.gridX + 1)
+            {
+                return Direction.Up;
+            }
+        }
+        return Direction.None;
+    }
+
 
 	abstract protected void DetermineTargetForChase ();
 

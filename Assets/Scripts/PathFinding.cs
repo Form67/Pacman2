@@ -169,7 +169,7 @@ public class PathFinding : MonoBehaviour {
             for (int y = 0; y < numCols; y++)
             {
                 float dist = Vector3.Distance(pos, grid[x][y].pos);
-                if (dist < closestDist && !grid[x][y].isWall)
+                if (dist < closestDist && !grid[x][y].isWall && !isHouseExit(grid[x][y]) && !isInGhostHouse(grid[x][y]))
                 {
                     closest = grid[x][y];
                     closestDist = dist;
@@ -252,5 +252,10 @@ public class PathFinding : MonoBehaviour {
     bool isHouseExit(Node n)
     {
         return ((n.gridY == 13 || n.gridY == 14) && n.gridX == 12);
+    }
+
+    bool isInGhostHouse(Node n)
+    {
+        return n.gridY <= 16 && n.gridY >= 11 && n.gridX <= 15 && n.gridX >= 13;
     }
 }
