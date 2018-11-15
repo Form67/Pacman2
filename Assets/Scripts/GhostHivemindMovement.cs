@@ -24,7 +24,9 @@ public class GhostHivemindMovement : MonoBehaviour {
 
         Vector3 originalPos;
 
-		public GhostData(string name, GameObject ghost, State originalState, Animator anim, PathFinding pathFinder){
+        float exitTime;
+
+		public GhostData(string name, GameObject ghost, State originalState, Animator anim, PathFinding pathFinder, float eTime){
             ghostName = name;
             ghostObject = ghost;
 			ghostState = originalState;
@@ -33,6 +35,7 @@ public class GhostHivemindMovement : MonoBehaviour {
             lerpTime = 0f;
             currentNode = pathFinder.WorldPosToNodeIncludingGhostHouse(ghost.transform.position);
             originalPos = ghost.transform.position;
+            exitTime = eTime;
 
             respawn = false;
         }
@@ -96,6 +99,11 @@ public class GhostHivemindMovement : MonoBehaviour {
         {
             return originalPos;
         }
+
+        public float getExitTime()
+        {
+            return exitTime;
+        }
 	}
 
 	Dictionary<string, GhostData> ghostMap;
@@ -113,8 +121,8 @@ public class GhostHivemindMovement : MonoBehaviour {
 
 	float frightenedTime;
 
-	float startTime;
-    public float exitTime;
+    float startTime;
+    float startExitTime;
 
     float currentEndTime;
 
@@ -138,10 +146,10 @@ public class GhostHivemindMovement : MonoBehaviour {
         if (blinky == null)
             print("blinky?");
 
-        ghostMap.Add("blinky", new GhostData("blinky", blinky, waveStates[0], blinky.GetComponent<Animator>(), pathFinder));
-        ghostMap.Add("inky", new GhostData("inky", inky, waveStates[0], inky.GetComponent<Animator>(), pathFinder));
-        ghostMap.Add("pinky", new GhostData("pinky", pinky, waveStates[0], pinky.GetComponent<Animator>(), pathFinder));
-        ghostMap.Add("clyde", new GhostData("clyde", clyde, waveStates[0], clyde.GetComponent<Animator>(), pathFinder));
+        ghostMap.Add("blinky", new GhostData("blinky", blinky, waveStates[0], blinky.GetComponent<Animator>(), pathFinder, 0));
+        ghostMap.Add("inky", new GhostData("inky", inky, waveStates[0], inky.GetComponent<Animator>(), pathFinder, 5));
+        ghostMap.Add("pinky", new GhostData("pinky", pinky, waveStates[0], pinky.GetComponent<Animator>(), pathFinder, 3));
+        ghostMap.Add("clyde", new GhostData("clyde", clyde, waveStates[0], clyde.GetComponent<Animator>(), pathFinder, 10));
 
         pacman = GameObject.FindGameObjectWithTag ("pacman");
 		pacmanNode = pathFinder.WorldPosToNode (pacman.transform.position);
@@ -151,6 +159,7 @@ public class GhostHivemindMovement : MonoBehaviour {
         currentEndIndex = 0;
 
         initialized = true;
+        startExitTime = Time.time;
 
     }
 	
@@ -169,117 +178,140 @@ public class GhostHivemindMovement : MonoBehaviour {
 
         foreach (GhostData data in ghostMap.Values)
         {
-            if (Time.time - startTime >= currentEndTime && currentEndTime != -1f && data.getGhostState() != State.FRIGHTENED && !data.getRespawn())
+            if (data.getGhostState() == State.DEFAULT)
             {
-                currentEndIndex++;
-                currentEndTime = waveEndTimes.Length > currentEndIndex ? waveEndTimes[currentEndIndex] : -1f;
-                data.setGhostState(waveStates[currentEndIndex]);
-                startTime = Time.time;
-            }
-            else if (Time.time - startTime >= frightenedTime && data.getGhostState() == State.FRIGHTENED)
-            {
-                data.setGhostState(waveStates[currentEndIndex]);
-                startTime = Time.time;
-                data.getGhostAnimator().SetBool("flash", false);
-            }
+                if (Time.time - startTime >= currentEndTime && currentEndTime != -1f && data.getGhostState() != State.FRIGHTENED && !data.getRespawn())
+                {
+                    currentEndIndex++;
+                    currentEndTime = waveEndTimes.Length > currentEndIndex ? waveEndTimes[currentEndIndex] : -1f;
+                    data.setGhostState(waveStates[currentEndIndex]);
+                    startTime = Time.time;
+                }
+                else if (data.getGhostState() == State.FRIGHTENED)
+                {
+                    if (Time.time - startTime >= frightenedTime)
+                    {
+                        data.setGhostState(waveStates[currentEndIndex]);
+                        startTime = Time.time;
+                        data.getGhostAnimator().SetBool("flash", false);
+                    }
+                    // End of state is near
+                    else if (frightenedTime - (Time.time - startTime) <= 2f)
+                    {
+                        data.getGhostAnimator().SetBool("flash", true);
+                    }
+                }
 
-            if(data.getLerpTime() > 1f)
-            {
-                data.setCurrentNode(pathFinder.GetNodeInDirection(data.getCurrentNode(), data.getDirection()));
-            }
-
-            if ((pathFinder.IsNodeTurnable(data.getCurrentNode()) || pathFinder.GetNodeInDirection(data.getCurrentNode(), data.getDirection()).isWall) && (data.getLerpTime() > 1f || data.getLerpTime() == 0f))
-            {
-                // Reset respawn
+                // Ghost reached respawn
                 if (data.getRespawn() == true && data.getCurrentNode() == pathFinder.grid[13][12])
                 {
                     GetComponent<SpriteRenderer>().color = Color.white;
                     data.setRespawn(false);
                 }
 
-                switch (data.getGhostState())
+
+                if (data.getLerpTime() > 1f)
                 {
-                    case State.CHASE:
-
-                        Node targetPoint = DetermineTargetForChase(data.getName(), data.getRespawn());
-
-                        List<Node> currentPath = pathFinder.AStar(data.getCurrentNode(), targetPoint, data.getDirection());
-
-                        data.setDirection(GetDirectionBetweenNodes(data.getCurrentNode(), currentPath[1]));
-                        break;
-                    case State.FRIGHTENED:
-                        currentPath = null;
-
-
-                        List<Node> neighbors = pathFinder.GetNeighbors(data.getCurrentNode());
-                        //List<Vector3> possibleVelocities = new List<Vector3> ();
-                        List<Direction> possibleDirections = new List<Direction>();
-                        foreach (Node neighbor in neighbors)
-                        {
-                            if (!neighbor.isWall)
-                            {
-                                if (neighbor.pos.y > data.getCurrentNode().pos.y)
-                                {
-                                    //possibleVelocities.Add (Vector3.up * frightenedVelocity);
-                                    possibleDirections.Add(Direction.Up);
-                                }
-                                if (neighbor.pos.y < data.getCurrentNode().pos.y)
-                                {
-                                    //possibleVelocities.Add (Vector3.down * frightenedVelocity);
-                                    possibleDirections.Add(Direction.Down);
-                                }
-                                if (neighbor.pos.x > data.getCurrentNode().pos.x)
-                                {
-
-                                    possibleDirections.Add(Direction.Right);
-                                }
-                                if (neighbor.pos.x < data.getCurrentNode().pos.x)
-                                {
-                                    possibleDirections.Add(Direction.Left);
-                                }
-                            }
-                        }
-
-                        data.setDirection(possibleDirections[Random.Range(0, possibleDirections.Count)]);
-
-                        break;
-                    case State.SCATTER:
-                        Node scatterPoint = GetScatterTarget(data.getName());
-                        currentPath = pathFinder.AStar(data.getCurrentNode(), scatterPoint, data.getDirection());
-                        data.setDirection(GetDirectionBetweenNodes(data.getCurrentNode(), currentPath[1]));
-                        break;
-                    default:
-
-                        break;
+                    data.setCurrentNode(pathFinder.GetNodeInDirection(data.getCurrentNode(), data.getDirection()));
                 }
 
-                if (data.getGhostState() != State.FRIGHTENED)
+                HandleCollisions(data);
+
+                if ((pathFinder.IsNodeTurnable(data.getCurrentNode()) || pathFinder.GetNodeInDirection(data.getCurrentNode(), data.getDirection()).isWall) && (data.getLerpTime() > 1f || data.getLerpTime() == 0f))
                 {
-                    switch (data.getDirection())
+                   
+                    switch (data.getGhostState())
                     {
+                        case State.CHASE:
 
-                        case (Direction.Right):
-                            data.getGhostAnimator().SetTrigger("goright");
-                            break;
+                            Node targetPoint = DetermineTargetForChase(data.getName(), data.getRespawn());
 
-                        case (Direction.Left):
-                            data.getGhostAnimator().SetTrigger("goleft");
+                            List<Node> currentPath = pathFinder.AStar(data.getCurrentNode(), targetPoint, data.getDirection());
+
+                            data.setDirection(GetDirectionBetweenNodes(data.getCurrentNode(), currentPath[1]));
                             break;
-                        case (Direction.Up):
-                            data.getGhostAnimator().SetTrigger("goup");
+                        case State.FRIGHTENED:
+                            currentPath = null;
+
+
+                            List<Node> neighbors = pathFinder.GetNeighbors(data.getCurrentNode());
+                            List<Direction> possibleDirections = new List<Direction>();
+                            foreach (Node neighbor in neighbors)
+                            {
+                                if (!neighbor.isWall)
+                                {
+                                    if (neighbor.pos.y > data.getCurrentNode().pos.y && data.getDirection() != Direction.Down)
+                                    {
+                                        possibleDirections.Add(Direction.Up);
+                                    }
+                                    if (neighbor.pos.y < data.getCurrentNode().pos.y && data.getDirection() != Direction.Up)
+                                    {
+                                        possibleDirections.Add(Direction.Down);
+                                    }
+                                    if (neighbor.pos.x > data.getCurrentNode().pos.x && data.getDirection() != Direction.Left)
+                                    {
+                                        possibleDirections.Add(Direction.Right);
+                                    }
+                                    if (neighbor.pos.x < data.getCurrentNode().pos.x && data.getDirection() != Direction.Right)
+                                    {
+                                        possibleDirections.Add(Direction.Left);
+                                    }
+                                }
+                            }
+
+                            data.setDirection(possibleDirections[Random.Range(0, possibleDirections.Count)]);
+
                             break;
-                        case (Direction.Down):
-                            data.getGhostAnimator().SetTrigger("godown");
+                        case State.SCATTER:
+                            Node scatterPoint = GetScatterTarget(data.getName());
+                            currentPath = pathFinder.AStar(data.getCurrentNode(), scatterPoint, data.getDirection());
+                            data.setDirection(GetDirectionBetweenNodes(data.getCurrentNode(), currentPath[1]));
+                            break;
+                        default:
+
                             break;
                     }
 
-                }
+                    if (data.getGhostState() != State.FRIGHTENED)
+                    {
+                        switch (data.getDirection())
+                        {
 
+                            case (Direction.Right):
+                                data.getGhostAnimator().SetTrigger("goright");
+                                break;
+
+                            case (Direction.Left):
+                                data.getGhostAnimator().SetTrigger("goleft");
+                                break;
+                            case (Direction.Up):
+                                data.getGhostAnimator().SetTrigger("goup");
+                                break;
+                            case (Direction.Down):
+                                data.getGhostAnimator().SetTrigger("godown");
+                                break;
+                        }
+
+                    }
+
+                }
+                data.getGhostObject().transform.position = LerpMovement(data);
+
+                data.setLerpTime(data.getLerpTime() + Time.deltaTime * (data.getGhostState() == State.FRIGHTENED ? frightenedVelocity : maxVelocity));
             }
-            data.getGhostObject().transform.position = LerpMovement(data);
-            
-            data.setLerpTime(data.getLerpTime() + Time.deltaTime * (data.getGhostState() == State.FRIGHTENED ? frightenedVelocity : maxVelocity));
-            
+            else
+            {
+                if (startExitTime + data.getExitTime() <= Time.time)
+                {
+                    data.setGhostState(waveStates[currentEndIndex]);
+                }
+                else if (Time.time - startTime >= currentEndTime && currentEndIndex < waveEndTimes.Length)
+                {
+                    currentEndIndex++;
+                    currentEndTime = waveEndTimes.Length > currentEndIndex ? waveEndTimes[currentEndIndex] : -1f;
+                    startTime = Time.time;
+                }
+            }
         }
 	}
 
@@ -501,32 +533,32 @@ public class GhostHivemindMovement : MonoBehaviour {
         }
         return Direction.None;
     }
-    /*
-    void HandleCollisions()
+
+
+    void HandleCollisions(GhostData ghost)
     {
-        Node frontNode = pathFinder.GetNodeInDirection(currentNode, direction);
+        Node myNode = ghost.getCurrentNode();
+        Direction myDir = ghost.getDirection();
+        Node frontNode = pathFinder.GetNodeInDirection(myNode, myDir);
 
-        foreach (UpdatedGhostMovement ghost in ghostsList)
+        foreach (GhostData otherGhost in ghostMap.Values)
         {
-            if (!ghost.respawn && (this.currentNode == ghost.currentNode || frontNode == ghost.currentNode))
+            if (!otherGhost.getRespawn() && (myNode == otherGhost.getCurrentNode() || frontNode == otherGhost.getCurrentNode()))
             {
-                ghost.FlipDirection();
-                ghost.ResetLerpTime();
-
-                this.FlipDirection();
-                this.ResetLerpTime();
+                ghost.setDirection(FlipDirection(myDir));
+                ghost.setLerpTime(0);
             }
         }
     }
-    */
+
 
     public void Reset()
     {
-        foreach(GhostData ghost in ghostMap)
+        foreach (GhostData ghost in ghostMap.Values)
         {
             ghost.getGhostObject().transform.position = ghost.getOriginalPos();
             ghost.setDirection(Direction.Up);
-            if (exitTIme == 0f)
+            if (ghost.getExitTime() == 0f)
             {
                 ghost.setGhostState(waveStates[0]);
             }
@@ -538,7 +570,6 @@ public class GhostHivemindMovement : MonoBehaviour {
             startTime = Time.time;
             startExitTime = Time.time;
             ghost.setCurrentNode(pathFinder.WorldPosToNodeIncludingGhostHouse(transform.position));
-            justBeenFlipped = false;
             ghost.setLerpTime(0f);
         }
     }

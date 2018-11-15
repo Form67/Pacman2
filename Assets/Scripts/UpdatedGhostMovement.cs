@@ -259,7 +259,6 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 		animator.SetTrigger ("blue");
 		
 	}
-
     
     
     protected void HandleCollisions()
@@ -272,7 +271,6 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
             {
                 this.FlipDirection();
                 this.ResetLerpTime();
-                
             }
         }
     }
