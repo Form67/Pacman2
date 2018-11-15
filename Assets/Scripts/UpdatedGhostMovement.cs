@@ -57,8 +57,6 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
     [HideInInspector]
     public bool respawn = false;
 
-    bool justBeenFlipped;
-
     Vector3 originalPosition;
     // Use this for initialization
     protected void Start() {
@@ -89,12 +87,10 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
         pathFinder = GameObject.FindGameObjectWithTag("pathfinding").GetComponent<PathFinding>();
         
         currentNode = pathFinder.WorldPosToNodeIncludingGhostHouse(transform.position);
-        justBeenFlipped = false;
     }
 
     // Update is called once per frame
     void Update() {
-        justBeenFlipped = false;
         if (currentState != State.DEFAULT)
         {
             if (pacman == null)
@@ -137,7 +133,8 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
             }
 
             HandleCollisions();
-            if ((pathFinder.IsNodeTurnable(currentNode, respawn) || pathFinder.GetNodeInDirection(currentNode, direction).isWall) && (lerpTime > 1f || lerpTime == 0f) && !justBeenFlipped)
+
+            if ((pathFinder.IsNodeTurnable(currentNode, respawn) || pathFinder.GetNodeInDirection(currentNode, direction).isWall) && (lerpTime > 1f || lerpTime == 0f))
             {
                 switch (currentState)
                 {
@@ -161,12 +158,10 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
                             {
                                 if (neighbor.pos.y > currentNode.pos.y && direction != Direction.Down)
                                 {
-                                    
                                     possibleDirections.Add(Direction.Up);
                                 }
                                 if (neighbor.pos.y < currentNode.pos.y && direction != Direction.Up)
                                 {
-                                   
                                     possibleDirections.Add(Direction.Down);
                                 }
                                 if (neighbor.pos.x > currentNode.pos.x && direction != Direction.Left)
@@ -275,9 +270,6 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
         {
             if (!ghost.respawn && (this.currentNode == ghost.currentNode || frontNode == ghost.currentNode))
             {
-                ghost.FlipDirection();
-                ghost.ResetLerpTime();
-
                 this.FlipDirection();
                 this.ResetLerpTime();
                 
@@ -286,7 +278,6 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
     }
 
     void FlipDirection() {
-        justBeenFlipped = true;
         switch (direction) {
             case (Direction.Up):
                 direction = Direction.Down;
@@ -387,7 +378,6 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
         startTime = Time.time;
         startExitTime = Time.time;
         currentNode = pathFinder.WorldPosToNodeIncludingGhostHouse(transform.position);
-        justBeenFlipped = false;
         lerpTime = 0f;
     }
 
