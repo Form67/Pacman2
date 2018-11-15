@@ -23,6 +23,7 @@ public class PathFinding : MonoBehaviour {
                 grid[x][y] = new Node(board[x][y], x, y);
             }
         }
+
     }
 
     // A-Star path finding algorithm
@@ -81,14 +82,13 @@ public class PathFinding : MonoBehaviour {
                 // Path is not better
                 else if (cost >= neighbor.gCost)
                     continue;
-
+                
 
                 // Path is better
                 neighbor.gCost = cost;
                 neighbor.hCost = ManhattanDistance(currentNode, neighbor);
                 neighbor.parent = currentNode;
 
-                
             }
         }
 
@@ -187,6 +187,28 @@ public class PathFinding : MonoBehaviour {
 				numPathNeighbors++;
 			}
 		}
-		return numPathNeighbors > 2;
+		return numPathNeighbors > 2 && !node.isWall;
+	}
+
+	public bool IsNodeTurnable(Node node){
+		if (node.isWall) {
+			return false;
+		}
+		List<Node> neighbors = GetNeighbors (node);
+		List<Node> nonWallNeighbors = new List<Node> ();
+		foreach (Node neighbor in neighbors) {
+			if (!neighbor.isWall) {
+				nonWallNeighbors.Add (neighbor);
+			}
+		}
+
+		if (nonWallNeighbors.Count > 2) {
+			return true;
+		} 
+		if (nonWallNeighbors.Count <= 1) {
+			return false;
+		}
+		return nonWallNeighbors [0].gridX != nonWallNeighbors [1].gridX && nonWallNeighbors [0].gridY != nonWallNeighbors [1].gridY;
+
 	}
 }
