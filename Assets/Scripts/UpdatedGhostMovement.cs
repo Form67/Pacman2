@@ -162,6 +162,7 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 		return (target - position).normalized * maxVelocity;
 	}
     Vector3 KinematicSeek(Vector3 position, Vector3 target) {
+        if (lerpTime > 1f) lerpTime = 0f;
         return Vector3.Lerp(position, target,lerpTime);
     }
 	protected void SetTargetPointPoint (Node point){
