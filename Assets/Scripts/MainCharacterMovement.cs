@@ -164,9 +164,6 @@ public class MainCharacterMovement : MonoBehaviour {
             Destroy(collision.gameObject);
 
         }
-    }
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
         if (collision.gameObject.tag == "ghost")
         {
             UpdatedGhostMovement singular = collision.gameObject.GetComponent<UpdatedGhostMovement>();
@@ -192,8 +189,8 @@ public class MainCharacterMovement : MonoBehaviour {
                 mapGen.DecLives();
 
                 GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
-                
-               
+
+
                 dead = true;
                 GetComponent<Animator>().SetBool("Dead", true);
                 GetComponent<CircleCollider2D>().enabled = false;
@@ -201,6 +198,10 @@ public class MainCharacterMovement : MonoBehaviour {
                 StartCoroutine(Respawn());
             }
         }
+    }
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        
     }
 
     IEnumerator Respawn()

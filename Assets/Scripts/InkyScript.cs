@@ -16,7 +16,10 @@ public class InkyScript : UpdatedGhostMovement {
     protected override void DetermineTargetForChase() {
         
         Node pacmanGoalNode = pathFinder.WorldPosToNode(pacman.transform.position);
-
+        if(blinky == null)
+        {
+            blinky = GameObject.Find("Blinky(Clone)");
+        }
 		if(pacman.transform.eulerAngles.z == 90) {
             if (pacmanGoalNode.gridX > 1) {
 				pacmanGoalNode = pathFinder.grid[pacmanGoalNode.gridX - 2][pacmanGoalNode.gridY];
@@ -49,4 +52,5 @@ public class InkyScript : UpdatedGhostMovement {
     protected override void GetScatterTarget() {
 		targetPoint = pathFinder.WorldPosToNode (pathFinder.grid [pathFinder.grid.Count - 1] [pathFinder.grid [pathFinder.grid.Count - 1].Length - 1].pos);
     }
+
 }
