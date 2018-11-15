@@ -81,11 +81,26 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 			currentState = waveStates [currentEndIndex];
 			startTime = Time.time;
 			animator.SetBool ("flash", false);
+			rbody.velocity = rbody.velocity.normalized * maxVelocity;
 		}
 
 		Vector3 velocity;
-		//if (Vector3.Distance (transform.position, pathFinder.WorldPosToNode (transform.position).pos) < closeEnoughDistance) {
-			CheckForFutureCollisions ();
+
+		Direction direction = Direction.None;
+		if (rbody.velocity.normalized == Vector2.up) {
+			direction = Direction.Up;
+		} else if (rbody.velocity.normalized == Vector2.down) {
+			direction = Direction.Down;
+		} else if (rbody.velocity.normalized == Vector2.left) {
+			direction = Direction.Left;
+		} else if (rbody.velocity.normalized == Vector2.right) {
+			direction = Direction.Right;
+		}
+
+		Node currentNode = pathFinder.WorldPosToNode(transform.position);
+		CheckForFutureCollisions ();
+		if(pathFinder.IsNodeTurnable(currentNode) || pathFinder.GetNodeInDirection(currentNode, direction).isWall){
+			
 			switch (currentState) {
 			case State.CHASE:
 				DetermineTargetForChase ();
@@ -95,30 +110,28 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 				break;
 			case State.FRIGHTENED:
 				currentPath = null;
-				Node currentNode = pathFinder.WorldPosToNode (transform.position);
-				if (pathFinder.IsNodeIntersection (currentNode)) {
-					List<Node> neighbors = pathFinder.GetNeighbors (currentNode);
-					List<Vector3> possibleVelocities = new List<Vector3> ();
-					foreach (Node neighbor in neighbors) {
-						if (!neighbor.isWall) {
-							if (neighbor.pos.y > currentNode.pos.y && rbody.velocity.normalized != Vector2.up) {
-								possibleVelocities.Add (Vector3.up * frightenedVelocity);
-							}
-							if (neighbor.pos.y < currentNode.pos.y && rbody.velocity.normalized != Vector2.down) {
-								possibleVelocities.Add (Vector3.down * frightenedVelocity);
-							}
-							if (neighbor.pos.x > currentNode.pos.x && rbody.velocity.normalized != Vector2.right) {
-								possibleVelocities.Add (Vector3.right * frightenedVelocity);
-							}
-							if (neighbor.pos.x < currentNode.pos.x && rbody.velocity.normalized != Vector2.left) {
-								possibleVelocities.Add (Vector3.left * frightenedVelocity);
-							}
+
+
+				List<Node> neighbors = pathFinder.GetNeighbors (currentNode);
+				List<Vector3> possibleVelocities = new List<Vector3> ();
+				foreach (Node neighbor in neighbors) {
+					if (!neighbor.isWall) {
+						if (neighbor.pos.y > currentNode.pos.y && rbody.velocity.normalized != Vector2.up) {
+							possibleVelocities.Add (Vector3.up * frightenedVelocity);
+						}
+						if (neighbor.pos.y < currentNode.pos.y && rbody.velocity.normalized != Vector2.down) {
+							possibleVelocities.Add (Vector3.down * frightenedVelocity);
+						}
+						if (neighbor.pos.x > currentNode.pos.x && rbody.velocity.normalized != Vector2.right) {
+							possibleVelocities.Add (Vector3.right * frightenedVelocity);
+						}
+						if (neighbor.pos.x < currentNode.pos.x && rbody.velocity.normalized != Vector2.left) {
+							possibleVelocities.Add (Vector3.left * frightenedVelocity);
 						}
 					}
-					velocity = possibleVelocities [Random.Range (0, possibleVelocities.Count)];
-				} else {
-					velocity = rbody.velocity.normalized * frightenedVelocity;	
 				}
+				velocity = possibleVelocities [Random.Range (0, possibleVelocities.Count)];
+
 				break;
 			case State.SCATTER:
 				GetScatterTarget ();
@@ -141,7 +154,8 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 					animator.SetTrigger ("godown");
 				}
 			}
-		//}
+
+		}
 	}
 
 	Vector3 PathFollow(){
@@ -161,6 +175,7 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 		startTime = Time.time;
 		currentState = State.FRIGHTENED;
 		animator.SetBool ("flash", true);
+		rbody.velocity = rbody.velocity.normalized * frightenedVelocity;
 	}
 
 	void CheckForFutureCollisions(){

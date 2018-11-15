@@ -26,7 +26,7 @@ public class PathFinding : MonoBehaviour {
     }
 
     // A-Star path finding algorithm
-    public List<Node> AStar(Node start, Node target, Direction dir = Direction.None)
+    public List<Node> AStar(Node start, Node target)
     {
         List<Node> openList = new List<Node>();   // List of discovered nodes that haven't been evaluated yet
         List<Node> closedList = new List<Node>(); // List of nodes that have already been evaluated
@@ -186,13 +186,13 @@ public class PathFinding : MonoBehaviour {
 	}
 
 	public bool IsNodeTurnable(Node node){
-		if (node.isWall) {
+		if (node.isWall || isHouseExit(node)) {
 			return false;
 		}
 		List<Node> neighbors = GetNeighbors (node);
 		List<Node> nonWallNeighbors = new List<Node> ();
 		foreach (Node neighbor in neighbors) {
-			if (!neighbor.isWall) {
+			if (!neighbor.isWall || !isHouseExit(neighbor)) {
 				nonWallNeighbors.Add (neighbor);
 			}
 		}
@@ -205,6 +205,23 @@ public class PathFinding : MonoBehaviour {
 		}
 		return nonWallNeighbors [0].gridX != nonWallNeighbors [1].gridX && nonWallNeighbors [0].gridY != nonWallNeighbors [1].gridY;
 
+	}
+
+	public Node GetNodeInDirection(Node node, Direction direction){
+		switch (direction) {
+
+		case(Direction.Up):
+			return ValidGridPos(node.gridX - 1, node.gridY) ? grid[node.gridX - 1][node.gridY] : null;
+		case(Direction.Down):
+			return ValidGridPos(node.gridX + 1, node.gridY) ? grid[node.gridX + 1][node.gridY] : null;
+		case(Direction.Left):
+			return ValidGridPos(node.gridX, node.gridY - 1) ? grid[node.gridX][node.gridY - 1] : null;
+		case(Direction.Right):
+			return ValidGridPos(node.gridX, node.gridY + 1) ? grid[node.gridX][node.gridY + 1] : null;
+
+		default:
+			return null;
+		}
 	}
 
     bool isHouseExit(Node n)
