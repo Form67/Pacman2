@@ -2,16 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
-public enum State {
-	DEFAULT,
-	CHASE,
-	SCATTER,
-	FRIGHTENED
-}
-
 public abstract class UpdatedGhostMovement : MonoBehaviour {
+
+
+	[System.Serializable]
+	public enum State {
+		DEFAULT,
+		CHASE,
+		SCATTER,
+		FRIGHTENED
+	}
 		
+		
+
+
 	public State[] waveStates;
 	//Should be of one size lower than waveStates
 	public float[] waveEndTimes;
@@ -80,25 +84,13 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 		}
 
 		Vector3 velocity;
-
-		Direction direction = Direction.None;
-		if (rbody.velocity.normalized == Vector2.up) {
-			direction = Direction.Up;
-		} else if (rbody.velocity.normalized == Vector2.down) {
-			direction = Direction.Down;
-		} else if (rbody.velocity.normalized == Vector2.left) {
-			direction = Direction.Left;
-		} else if (rbody.velocity.normalized == Vector2.right) {
-			direction = Direction.Right;
-		}
-
 		//if (Vector3.Distance (transform.position, pathFinder.WorldPosToNode (transform.position).pos) < closeEnoughDistance) {
 			CheckForFutureCollisions ();
 			switch (currentState) {
 			case State.CHASE:
 				DetermineTargetForChase ();
 			
-				currentPath = pathFinder.AStar (pathFinder.WorldPosToNode (transform.position), targetPoint, direction);
+				currentPath = pathFinder.AStar (pathFinder.WorldPosToNode (transform.position), targetPoint);
 				velocity = PathFollow ();
 				break;
 			case State.FRIGHTENED:
@@ -130,7 +122,7 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 				break;
 			case State.SCATTER:
 				GetScatterTarget ();
-				currentPath = pathFinder.AStar (pathFinder.WorldPosToNode (transform.position), targetPoint, direction);
+				currentPath = pathFinder.AStar (pathFinder.WorldPosToNode (transform.position), targetPoint);
 				velocity = PathFollow ();
 				break;
 			default:
@@ -153,9 +145,6 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 	}
 
 	Vector3 PathFollow(){
-		if (currentPath.Count == 0) {
-			return Vector3.zero;
-		}
 		return StaticSeek (transform.position, currentPath.Count > 1 ? currentPath [1].pos : currentPath[0].pos);
 	}
 
