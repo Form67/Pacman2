@@ -248,7 +248,7 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
     }
 
     Direction GetDirectionBetweenNodes(Node first, Node second) {
-        //print("getting direction between nodes " + first.gridY + " " + first.gridX + " " + second.gridY + " " + second.gridX);
+       
         if(first.gridX == second.gridX) {
             if(first.gridY == second.gridY - 1) {
                 return Direction.Right;

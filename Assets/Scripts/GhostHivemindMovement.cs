@@ -13,14 +13,23 @@ public class GhostHivemindMovement : MonoBehaviour {
 		State ghostState;
 		Animator ghostAnimator;
 
-		public List<Node> currentPath;
+        Direction direction;
+        float lerpTime;
 
-		public GhostData(GameObject ghost, State originalState, Animator anim){
-			ghostObject = ghost;
+        Node currentNode;
+
+        string ghostName;
+
+		public GhostData(string name, GameObject ghost, State originalState, Animator anim, PathFinding pathFinder){
+            ghostName = name;
+            ghostObject = ghost;
 			ghostState = originalState;
 			ghostAnimator = anim;
-			currentPath = null;
-		}
+            direction = Direction.Up;
+            lerpTime = 0f;
+            currentNode = pathFinder.WorldPosToNodeIncludingGhostHouse(ghost.transform.position);
+
+        }
 
 		public GameObject getGhostObject(){
 			return ghostObject;
@@ -37,6 +46,35 @@ public class GhostHivemindMovement : MonoBehaviour {
 		public Animator getGhostAnimator(){
 			return ghostAnimator;
 		}
+
+        public Direction getDirection()
+        {
+            return direction;
+        }
+        public void setDirection(Direction newDirection)
+        {
+            direction = newDirection;
+        }
+        public float getLerpTime()
+        {
+            return lerpTime;
+        }
+        public void setLerpTime(float newLerpTime)
+        {
+            lerpTime = newLerpTime;
+        }
+        public Node getCurrentNode()
+        {
+            return currentNode;
+        }
+        public void setCurrentNode(Node node)
+        {
+            currentNode = node;
+        }
+        public string getName()
+        {
+            return ghostName;
+        }
 	}
 
 	Dictionary<string, GhostData> ghostMap;
@@ -58,6 +96,8 @@ public class GhostHivemindMovement : MonoBehaviour {
 
 	float currentEndTime;
 
+    int currentEndIndex;
+
 	PathFinding pathFinder;
 
 	// Use this for initialization
@@ -69,10 +109,10 @@ public class GhostHivemindMovement : MonoBehaviour {
 		GameObject pinky = GameObject.Find("Pinky(Clone)");
 		GameObject clyde = GameObject.Find("Clyde(Clone)");
 
-		ghostMap.Add ("blinky", new GhostData (blinky, waveStates [0], blinky.GetComponent<Animator> ()));
-		ghostMap.Add ("inky", new GhostData (inky, waveStates [0], inky.GetComponent<Animator> ()));
-		ghostMap.Add ("pinky", new GhostData (pinky, waveStates [0], pinky.GetComponent<Animator> ()));
-		ghostMap.Add ("clyde", new GhostData (clyde, waveStates [0], clyde.GetComponent<Animator> ()));
+		ghostMap.Add ("blinky", new GhostData ("blinky", blinky, waveStates [0], blinky.GetComponent<Animator> (), pathFinder));
+		ghostMap.Add ("inky", new GhostData ("inky", inky, waveStates [0], inky.GetComponent<Animator> (), pathFinder));
+		ghostMap.Add ("pinky", new GhostData ("pinky", pinky, waveStates [0], pinky.GetComponent<Animator> (), pathFinder));
+		ghostMap.Add ("clyde", new GhostData ("clyde", clyde, waveStates [0], clyde.GetComponent<Animator> (), pathFinder));
 
 		pacman = GameObject.FindGameObjectWithTag ("pacman");
 		pacmanNode = pathFinder.WorldPosToNode (pacman.transform.position);
@@ -80,21 +120,190 @@ public class GhostHivemindMovement : MonoBehaviour {
 		frightenedTime = pacman.GetComponent<MainCharacterMovement> ().invincibleTimer;
 
 		currentEndTime = waveEndTimes.Length > 0 ? waveEndTimes [0] : -1f;
+        currentEndIndex = 0;
 	}
 	
 	// Update is called once per frame
 	void Update () {
+        if(pacman == null)
+        {
+            pacman = GameObject.FindGameObjectWithTag("pacman");
+        }
 		pacmanNode = pathFinder.WorldPosToNode (pacman.transform.position);
+        
+
+        foreach (GhostData data in ghostMap.Values)
+        {
+            if (Time.time - startTime >= currentEndTime && currentEndTime != -1f && data.getGhostState() != State.FRIGHTENED)
+            {
+                currentEndIndex++;
+                currentEndTime = waveEndTimes.Length > currentEndIndex ? waveEndTimes[currentEndIndex] : -1f;
+                data.setGhostState(waveStates[currentEndIndex]);
+                startTime = Time.time;
+            }
+            else if (Time.time - startTime >= frightenedTime && data.getGhostState() == State.FRIGHTENED)
+            {
+                data.setGhostState(waveStates[currentEndIndex]);
+                startTime = Time.time;
+                data.getGhostAnimator().SetBool("flash", false);
+            }
+
+            if(data.getLerpTime() > 1f)
+            {
+                data.setCurrentNode(pathFinder.GetNodeInDirection(data.getCurrentNode(), data.getDirection()));
+            }
+
+            if ((pathFinder.IsNodeTurnable(data.getCurrentNode()) || pathFinder.GetNodeInDirection(data.getCurrentNode(), data.getDirection()).isWall) && (data.getLerpTime() > 1f || data.getLerpTime() == 0f))
+            {
+
+                switch (data.getGhostState())
+                {
+                    case State.CHASE:
+
+                        Node targetPoint = DetermineTargetForChase(data.getName());
+
+                        List<Node> currentPath = pathFinder.AStar(data.getCurrentNode(), targetPoint, data.getDirection());
+
+                        data.setDirection(GetDirectionBetweenNodes(data.getCurrentNode(), currentPath[1]));
+                        break;
+                    case State.FRIGHTENED:
+                        currentPath = null;
+
+
+                        List<Node> neighbors = pathFinder.GetNeighbors(data.getCurrentNode());
+                        //List<Vector3> possibleVelocities = new List<Vector3> ();
+                        List<Direction> possibleDirections = new List<Direction>();
+                        foreach (Node neighbor in neighbors)
+                        {
+                            if (!neighbor.isWall)
+                            {
+                                if (neighbor.pos.y > data.getCurrentNode().pos.y)
+                                {
+                                    //possibleVelocities.Add (Vector3.up * frightenedVelocity);
+                                    possibleDirections.Add(Direction.Up);
+                                }
+                                if (neighbor.pos.y < data.getCurrentNode().pos.y)
+                                {
+                                    //possibleVelocities.Add (Vector3.down * frightenedVelocity);
+                                    possibleDirections.Add(Direction.Down);
+                                }
+                                if (neighbor.pos.x > data.getCurrentNode().pos.x)
+                                {
+
+                                    possibleDirections.Add(Direction.Right);
+                                }
+                                if (neighbor.pos.x < data.getCurrentNode().pos.x)
+                                {
+                                    possibleDirections.Add(Direction.Left);
+                                }
+                            }
+                        }
+
+                        data.setDirection(possibleDirections[Random.Range(0, possibleDirections.Count)]);
+
+                        break;
+                    case State.SCATTER:
+                        Node scatterPoint = GetScatterTarget(data.getName());
+                        currentPath = pathFinder.AStar(data.getCurrentNode(), scatterPoint, data.getDirection());
+                        data.setDirection(GetDirectionBetweenNodes(data.getCurrentNode(), currentPath[1]));
+                        break;
+                    default:
+
+                        break;
+                }
+
+                if (data.getGhostState() != State.FRIGHTENED)
+                {
+                    switch (data.getDirection())
+                    {
+
+                        case (Direction.Right):
+                            data.getGhostAnimator().SetTrigger("goright");
+                            break;
+
+                        case (Direction.Left):
+                            data.getGhostAnimator().SetTrigger("goleft");
+                            break;
+                        case (Direction.Up):
+                            data.getGhostAnimator().SetTrigger("goup");
+                            break;
+                        case (Direction.Down):
+                            data.getGhostAnimator().SetTrigger("godown");
+                            break;
+                    }
+
+                }
+
+            }
+            data.getGhostObject().transform.position = LerpMovement(data);
+            
+            data.setLerpTime(data.getLerpTime() + Time.deltaTime * (data.getGhostState() == State.FRIGHTENED ? frightenedVelocity : maxVelocity));
+            
+        }
 	}
 
+    Vector3 LerpMovement(GhostData data)
+    {
+        Node target = pathFinder.GetNodeInDirection(data.getCurrentNode(), data.getDirection());
+        if (data.getLerpTime() > 1f)
+        {
+            data.setLerpTime(0f);
+        }
+        return Vector3.Lerp(data.getCurrentNode().pos, target.pos, data.getLerpTime());
+    }
 
+    Node DetermineTargetForChase(string ghostName)
+    {
+        if(ghostName == "blinky")
+        {
+            return BlinkyDetermineTargetForChase();
+        }
+        if(ghostName == "inky")
+        {
+            return InkyDetermineTargetForChase();
+        }
+        if(ghostName == "pinky")
+        {
+            return PinkyDetermineTargetForChase();
+        }
+        if(ghostName == "clyde")
+        {
+            return ClydeDetermineTargetForChase();
+        }
+        return null;
+    }
 
-	public void BecomeFrightened(){
+    Node GetScatterTarget(string ghostName)
+    {
+        if (ghostName == "blinky")
+        {
+            return BlinkyDetermineTargetForScatter();
+        }
+        if (ghostName == "inky")
+        {
+            return InkyDetermineTargetForScatter();
+        }
+        if (ghostName == "pinky")
+        {
+            return PinkyDetermineTargetForScatter();
+        }
+        if (ghostName == "clyde")
+        {
+            return ClydeDetermineTargetForScatter();
+        }
+        return null;
+    }
+
+    public void BecomeFrightened(){
 		foreach (GhostData ghostData in ghostMap.Values) {
 			ghostData.setGhostState (State.FRIGHTENED);
-			ghostData.currentPath = null;
-		}
-	}
+            ghostData.getGhostAnimator().SetBool("flash", true);
+        }
+        currentEndTime -= Time.time - startTime;
+        startTime = Time.time;
+        
+        
+    }
 
 	Node BlinkyDetermineTargetForChase(){
 		return pacmanNode;
@@ -185,4 +394,32 @@ public class GhostHivemindMovement : MonoBehaviour {
 	Node ClydeDetermineTargetForScatter(){
 		return pathFinder.WorldPosToNode (pathFinder.grid [pathFinder.grid.Count - 1] [0].pos);
 	}
+
+    Direction GetDirectionBetweenNodes(Node first, Node second)
+    {
+
+        if (first.gridX == second.gridX)
+        {
+            if (first.gridY == second.gridY - 1)
+            {
+                return Direction.Right;
+            }
+            if (first.gridY == second.gridY + 1)
+            {
+                return Direction.Left;
+            }
+        }
+        if (first.gridY == second.gridY)
+        {
+            if (first.gridX == second.gridX - 1)
+            {
+                return Direction.Down;
+            }
+            if (first.gridX == second.gridX + 1)
+            {
+                return Direction.Up;
+            }
+        }
+        return Direction.None;
+    }
 }
