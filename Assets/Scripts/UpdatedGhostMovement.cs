@@ -110,7 +110,6 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
         {
             GetComponent<SpriteRenderer>().color = Color.white;
             respawn = false;
-
         }
 
         if (lerpTime > 1f)
@@ -321,10 +320,11 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 
     public void Eaten()
     {
+
+        respawn = true;
         animator.SetBool("flash", false);
         currentState = State.CHASE;
         targetPoint = pathFinder.grid[13][12];
-        respawn = true;
         GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0.3f);
     }
 

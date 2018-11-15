@@ -170,7 +170,7 @@ public class MainCharacterMovement : MonoBehaviour {
         if (collision.gameObject.tag == "ghost")
         {
             UpdatedGhostMovement singular = collision.gameObject.GetComponent<UpdatedGhostMovement>();
-            GhostHivemindMovement hivemind = collision.gameObject.GetComponent<GhostHivemindMovement>();
+            //GhostHivemindMovement hivemind = collision.gameObject.GetComponent<GhostHivemindMovement>();
 
             if (singular && singular.respawn)
                 return;
