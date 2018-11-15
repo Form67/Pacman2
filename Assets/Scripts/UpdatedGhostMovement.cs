@@ -84,9 +84,10 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
         {
             pacman = GameObject.FindGameObjectWithTag("pacman");
         }
-        if (Time.time - startTime >= currentEndTime && currentEndTime != -1f && currentState != State.FRIGHTENED && respawn == false) {
+        if (Time.time - startTime >= currentEndTime && currentEndIndex < waveEndTimes.Length && currentState != State.FRIGHTENED && respawn == false) {
             currentEndIndex++;
             currentEndTime = waveEndTimes.Length > currentEndIndex ? waveEndTimes[currentEndIndex] : -1f;
+            print(currentEndIndex + " " + currentEndTime);
             currentState = waveStates[currentEndIndex];
             startTime = Time.time;
         } else if (currentState == State.FRIGHTENED) {
@@ -127,7 +128,7 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 				    DetermineTargetForChase ();
                 
 				currentPath = pathFinder.AStar (currentNode, targetPoint, direction);
-                  
+                    print(currentPath.Count + " with path from " + currentNode.gridY + " " + currentNode.gridX + " to " + targetPoint.gridY + " " + targetPoint.gridX);
                 direction = GetDirectionBetweenNodes(currentNode, currentPath[1]);
 				break;
 			case State.FRIGHTENED:
