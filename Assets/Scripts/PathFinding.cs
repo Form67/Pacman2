@@ -114,12 +114,6 @@ public class PathFinding : MonoBehaviour {
     }
 
 
-    bool isHouseExit(Node n)
-    {
-        return ((n.gridY == 13 || n.gridY == 14) && n.gridX == 12);
-    }
-
-
     // Return the manhattan distance between two nodes
     int ManhattanDistance(Node a, Node b)
     {
