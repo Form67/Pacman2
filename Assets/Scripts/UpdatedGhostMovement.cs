@@ -74,8 +74,7 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-        //currentNode = pathFinder.WorldPosToNode(transform.position);
-
+        
         if (pacman == null)
         {
             pacman = GameObject.FindGameObjectWithTag("pacman");
@@ -89,7 +88,7 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
             currentState = waveStates[currentEndIndex];
             startTime = Time.time;
             animator.SetBool("flash", false);
-            rbody.velocity = rbody.velocity.normalized * maxVelocity;
+            //rbody.velocity = rbody.velocity.normalized * maxVelocity;
         }
 
         if(lerpTime > 1f)
@@ -105,8 +104,7 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 				DetermineTargetForChase ();
 			
 				currentPath = pathFinder.AStar (currentNode, targetPoint, direction);
-                    print(currentPath.Count);
-                //currentIndexOnPath = 0;
+                  
                 direction = GetDirectionBetweenNodes(currentNode, currentPath[1]);
 				break;
 			case State.FRIGHTENED:
@@ -114,24 +112,29 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 
 
 				List<Node> neighbors = pathFinder.GetNeighbors (currentNode);
-				List<Vector3> possibleVelocities = new List<Vector3> ();
+				//List<Vector3> possibleVelocities = new List<Vector3> ();
+                List<Direction> possibleDirections = new List<Direction>();
 				foreach (Node neighbor in neighbors) {
 					if (!neighbor.isWall) {
-						if (neighbor.pos.y > currentNode.pos.y && rbody.velocity.normalized != Vector2.up) {
-							possibleVelocities.Add (Vector3.up * frightenedVelocity);
+						if (neighbor.pos.y > currentNode.pos.y) {
+							//possibleVelocities.Add (Vector3.up * frightenedVelocity);
+                            possibleDirections.Add(Direction.Up);
 						}
-						if (neighbor.pos.y < currentNode.pos.y && rbody.velocity.normalized != Vector2.down) {
-							possibleVelocities.Add (Vector3.down * frightenedVelocity);
+						if (neighbor.pos.y < currentNode.pos.y) {
+							//possibleVelocities.Add (Vector3.down * frightenedVelocity);
+                                possibleDirections.Add(Direction.Down);
+                            }
+						if (neighbor.pos.x > currentNode.pos.x) {
+						
+                                possibleDirections.Add(Direction.Right);
 						}
-						if (neighbor.pos.x > currentNode.pos.x && rbody.velocity.normalized != Vector2.right) {
-							possibleVelocities.Add (Vector3.right * frightenedVelocity);
-						}
-						if (neighbor.pos.x < currentNode.pos.x && rbody.velocity.normalized != Vector2.left) {
-							possibleVelocities.Add (Vector3.left * frightenedVelocity);
+						if (neighbor.pos.x < currentNode.pos.x) {
+							possibleDirections.Add (Direction.Left);
 						}
 					}
 				}
-				//velocity = possibleVelocities [Random.Range (0, possibleVelocities.Count)];
+
+                    direction = possibleDirections[Random.Range(0, possibleDirections.Count)];
 
 				break;
 			case State.SCATTER:
@@ -144,17 +147,26 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 				
 				break;
 			}
-			//rbody.velocity = velocity;
+			
 			if (currentState != State.FRIGHTENED) {
-				if (rbody.velocity.x > 0) {
-					animator.SetTrigger ("goright");
-				} else if (rbody.velocity.x < 0) {
-					animator.SetTrigger ("goleft");
-				} else if (rbody.velocity.y > 0) {
-					animator.SetTrigger ("goup");
-				} else {
-					animator.SetTrigger ("godown");
-				}
+                switch (direction)
+                {
+
+                    case (Direction.Right):
+                    animator.SetTrigger("goright");
+                        break;
+
+                    case (Direction.Left):
+                    animator.SetTrigger("goleft");
+                        break;
+                    case (Direction.Up):
+                    animator.SetTrigger("goup");
+                        break;
+                    case (Direction.Down):
+                    animator.SetTrigger("godown");
+                        break;
+            }
+                
 			}
 
 		}
@@ -196,7 +208,7 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 		startTime = Time.time;
 		currentState = State.FRIGHTENED;
 		animator.SetBool ("flash", true);
-		rbody.velocity = rbody.velocity.normalized * frightenedVelocity;
+		//rbody.velocity = rbody.velocity.normalized * frightenedVelocity;
 	}
 
 	void CheckForFutureCollisions(){
