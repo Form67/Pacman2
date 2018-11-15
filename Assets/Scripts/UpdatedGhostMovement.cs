@@ -49,7 +49,10 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 
     public float lerpTime;
     int currentIndexOnPath;
-    Node currentNode;
+
+    [HideInInspector]
+    public Node currentNode;
+
     // Use this for initialization
     protected void Start() {
         direction = Direction.Up;
@@ -100,7 +103,9 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
             }
         }
 
-        if(lerpTime > 1f)
+        HandleCollisions();
+
+        if (lerpTime > 1f)
         {
             currentNode = pathFinder.GetNodeInDirection(currentNode, direction);
         }
@@ -283,9 +288,30 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
         return Direction.None;
     }
 
+    public void ResetLerpTime()
+    {
+        lerpTime = 0;
+    }
 
 	abstract protected void DetermineTargetForChase ();
 
 	abstract protected void GetScatterTarget ();
+
+    protected void HandleCollisions()
+    {
+        Node frontNode = pathFinder.GetNodeInDirection(currentNode, direction); 
+
+        foreach(UpdatedGhostMovement ghost in ghostsList)
+        {
+            if (this.currentNode == ghost.currentNode || frontNode == ghost.currentNode)
+            {
+                ghost.FlipDirection();
+                ghost.ResetLerpTime();
+
+                this.FlipDirection();
+                this.ResetLerpTime();
+            }
+        }
+    }
 
 }
