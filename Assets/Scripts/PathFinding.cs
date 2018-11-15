@@ -23,12 +23,34 @@ public class PathFinding : MonoBehaviour {
                 grid[x][y] = new Node(board[x][y], x, y);
             }
         }
-
     }
 
     // A-Star path finding algorithm
-    public List<Node> AStar(Node start, Node target)
+    public List<Node> AStar(Node start, Node target, Direction direction)
     {
+        // Handle the special case when pathfinding to same position
+        if(start == target)
+        {
+            List<Node> neighbors = GetNeighbors(start);
+            Node n = null;
+            foreach(Node neighbor in neighbors)
+            {
+                if (!neighbor.isWall)
+                {
+                    n = neighbor;
+                    break;
+                }
+            }
+
+            List<Node> partialPath = AStar(n, target, direction);
+
+            partialPath.Reverse();
+            partialPath.Add(start);
+            partialPath.Reverse();
+            return partialPath;
+        }
+
+
         List<Node> openList = new List<Node>();   // List of discovered nodes that haven't been evaluated yet
         List<Node> closedList = new List<Node>(); // List of nodes that have already been evaluated
 
@@ -49,7 +71,7 @@ public class PathFinding : MonoBehaviour {
             }
             
             // Check if target was reached
-            if (start != currentNode && currentNode.Equals(target))
+            if (currentNode.Equals(target))
             {
                 return ConstructPath(start, target);
             }
@@ -59,7 +81,7 @@ public class PathFinding : MonoBehaviour {
             openList.Remove(currentNode);
             closedList.Add(currentNode);
 
-
+            // Perform regular path finding (can proceed to any non-wall neighbor)
             // Visit all the neighbors of the current node
             List<Node> neighbors = GetNeighbors(currentNode);
 
@@ -70,6 +92,15 @@ public class PathFinding : MonoBehaviour {
                 // Ignore already evaluated neighbor
                 if (neighbor.isWall || closedList.Contains(neighbor))
                     continue;
+
+                // Ignore the node directly behind the ghost, if not looping 
+                if(currentNode == start)
+                {
+                    Node behind = GetNodeInDirection(start, GetOppDirection(direction));  // the node is behind the player
+
+                    if (IsNodeIntersection(start) && neighbor == behind)
+                        continue;
+                }
 
                 // Distance from start to neighbor (the f cost)
                 int cost = currentNode.gCost + ManhattanDistance(currentNode, neighbor);
@@ -84,12 +115,10 @@ public class PathFinding : MonoBehaviour {
                 else if (cost >= neighbor.gCost)
                     continue;
                 
-
                 // Path is better
                 neighbor.gCost = cost;
                 neighbor.hCost = ManhattanDistance(currentNode, neighbor);
                 neighbor.parent = currentNode;
-
             }
         }
 
@@ -112,6 +141,7 @@ public class PathFinding : MonoBehaviour {
         path.Reverse();
         return path;
     }
+
 
     // Return the manhattan distance between two nodes
     int ManhattanDistance(Node a, Node b)
@@ -162,7 +192,7 @@ public class PathFinding : MonoBehaviour {
             for (int y = 0; y < numCols; y++)
             {
                 float dist = Vector3.Distance(pos, grid[x][y].pos);
-                if (dist < closestDist && !grid[x][y].isWall)
+                if (dist < closestDist && !grid[x][y].isWall && !isHouseExit(grid[x][y]) && !isInGhostHouse(grid[x][y]))
                 {
                     closest = grid[x][y];
                     closestDist = dist;
@@ -173,7 +203,28 @@ public class PathFinding : MonoBehaviour {
         return closest;
     }
 
-	public bool IsNodeIntersection(Node node){
+    public Node WorldPosToNodeIncludingGhostHouse(Vector3 pos)
+    {
+        Node closest = null;
+        float closestDist = float.MaxValue;
+
+        for (int x = 0; x < numRows; x++)
+        {
+            for (int y = 0; y < numCols; y++)
+            {
+                float dist = Vector3.Distance(pos, grid[x][y].pos);
+                if (dist < closestDist && !grid[x][y].isWall && !isHouseExit(grid[x][y]))
+                {
+                    closest = grid[x][y];
+                    closestDist = dist;
+                }
+            }
+        }
+
+        return closest;
+    }
+
+    public bool IsNodeIntersection(Node node){
 		List<Node> neighbors = GetNeighbors (node);
 		int numPathNeighbors = 0;
 		foreach (Node neighbor in neighbors) {
@@ -181,7 +232,7 @@ public class PathFinding : MonoBehaviour {
 				numPathNeighbors++;
 			}
 		}
-		return numPathNeighbors > 2 && !node.isWall;
+		return numPathNeighbors > 2;
 	}
 
 	public bool IsNodeTurnable(Node node){
@@ -191,7 +242,7 @@ public class PathFinding : MonoBehaviour {
 		List<Node> neighbors = GetNeighbors (node);
 		List<Node> nonWallNeighbors = new List<Node> ();
 		foreach (Node neighbor in neighbors) {
-			if (!neighbor.isWall || !isHouseExit(neighbor)) {
+			if (!neighbor.isWall && !isHouseExit(neighbor)) {
 				nonWallNeighbors.Add (neighbor);
 			}
 		}
@@ -219,12 +270,36 @@ public class PathFinding : MonoBehaviour {
 			return ValidGridPos(node.gridX, node.gridY + 1) ? grid[node.gridX][node.gridY + 1] : null;
 
 		default:
+                
 			return null;
 		}
 	}
 
+    Direction GetOppDirection(Direction direction)
+    {
+        switch (direction)
+        {
+            case (Direction.Up):
+                return Direction.Down;
+            case (Direction.Down):
+                return Direction.Up;
+            case (Direction.Left):
+                return Direction.Right;
+            case (Direction.Right):
+                return Direction.Left;
+
+            default:
+                return Direction.None;
+        }
+    }
+
     bool isHouseExit(Node n)
     {
         return ((n.gridY == 13 || n.gridY == 14) && n.gridX == 12);
+    }
+
+    bool isInGhostHouse(Node n)
+    {
+        return n.gridY <= 16 && n.gridY >= 11 && n.gridX <= 15 && n.gridX >= 13;
     }
 }

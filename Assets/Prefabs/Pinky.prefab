@@ -114,7 +114,7 @@ MonoBehaviour:
   - 5
   - 5
   - 5
-  maxVelocity: 1
+  maxVelocity: 2
   frightenedVelocity: 2
   frightenedTime: 7
   speed: 0.05

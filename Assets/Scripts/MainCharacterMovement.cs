@@ -154,7 +154,8 @@ public class MainCharacterMovement : MonoBehaviour {
             if (collision.gameObject.name.Contains("Power"))
             {
                 foreach (GameObject g in GameObject.FindGameObjectsWithTag("ghost")) {
-                    SendMessage("BecomeFrightened");
+                    
+                    g.GetComponent<UpdatedGhostMovement>().BecomeFrightened();
                 }
                 isInvincible = true;
                 invincibleTimer += invDurationPerPellet;   // power pellets stack
