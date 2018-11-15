@@ -23,11 +23,10 @@ public class PathFinding : MonoBehaviour {
                 grid[x][y] = new Node(board[x][y], x, y);
             }
         }
-
     }
 
     // A-Star path finding algorithm
-    public List<Node> AStar(Node start, Node target)
+    public List<Node> AStar(Node start, Node target, Direction direction)
     {
         List<Node> openList = new List<Node>();   // List of discovered nodes that haven't been evaluated yet
         List<Node> closedList = new List<Node>(); // List of nodes that have already been evaluated
@@ -59,7 +58,7 @@ public class PathFinding : MonoBehaviour {
             openList.Remove(currentNode);
             closedList.Add(currentNode);
 
-
+            // Perform regular path finding (can proceed to any non-wall neighbor)
             // Visit all the neighbors of the current node
             List<Node> neighbors = GetNeighbors(currentNode);
 
@@ -70,6 +69,15 @@ public class PathFinding : MonoBehaviour {
                 // Ignore already evaluated neighbor
                 if (neighbor.isWall || closedList.Contains(neighbor))
                     continue;
+
+                // Igonre the node directly behind the ghost, if not looping 
+                if(currentNode == start && start != target)
+                {
+                    Node behind = GetNodeInDirection(start, GetOppDirection(direction));  // the node is behind the player
+
+                    if (IsNodeIntersection(start) && neighbor == behind)
+                        continue;
+                }
 
                 // Distance from start to neighbor (the f cost)
                 int cost = currentNode.gCost + ManhattanDistance(currentNode, neighbor);
@@ -84,12 +92,10 @@ public class PathFinding : MonoBehaviour {
                 else if (cost >= neighbor.gCost)
                     continue;
                 
-
                 // Path is better
                 neighbor.gCost = cost;
                 neighbor.hCost = ManhattanDistance(currentNode, neighbor);
                 neighbor.parent = currentNode;
-
             }
         }
 
@@ -112,6 +118,7 @@ public class PathFinding : MonoBehaviour {
         path.Reverse();
         return path;
     }
+
 
     // Return the manhattan distance between two nodes
     int ManhattanDistance(Node a, Node b)
@@ -181,7 +188,7 @@ public class PathFinding : MonoBehaviour {
 				numPathNeighbors++;
 			}
 		}
-		return numPathNeighbors > 2 && !node.isWall;
+		return numPathNeighbors > 2;
 	}
 
 	public bool IsNodeTurnable(Node node){
@@ -191,7 +198,7 @@ public class PathFinding : MonoBehaviour {
 		List<Node> neighbors = GetNeighbors (node);
 		List<Node> nonWallNeighbors = new List<Node> ();
 		foreach (Node neighbor in neighbors) {
-			if (!neighbor.isWall || !isHouseExit(neighbor)) {
+			if (!neighbor.isWall && !isHouseExit(neighbor)) {
 				nonWallNeighbors.Add (neighbor);
 			}
 		}
@@ -219,9 +226,28 @@ public class PathFinding : MonoBehaviour {
 			return ValidGridPos(node.gridX, node.gridY + 1) ? grid[node.gridX][node.gridY + 1] : null;
 
 		default:
+                
 			return null;
 		}
 	}
+
+    Direction GetOppDirection(Direction direction)
+    {
+        switch (direction)
+        {
+            case (Direction.Up):
+                return Direction.Down;
+            case (Direction.Down):
+                return Direction.Up;
+            case (Direction.Left):
+                return Direction.Right;
+            case (Direction.Right):
+                return Direction.Left;
+
+            default:
+                return Direction.None;
+        }
+    }
 
     bool isHouseExit(Node n)
     {

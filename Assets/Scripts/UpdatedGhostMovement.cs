@@ -80,28 +80,33 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 			rbody.velocity = rbody.velocity.normalized * maxVelocity;
 		}
 
-		Vector3 velocity;
+        Vector3 velocity;
 
-		Direction direction = Direction.None;
-		if (rbody.velocity.normalized == Vector2.up) {
+        Vector2 dir = rbody.velocity.normalized;
+        dir = new Vector2(Mathf.RoundToInt(dir.x), Mathf.RoundToInt(dir.y));
+
+
+        Direction direction = Direction.None;
+		if (dir == Vector2.up) {
 			direction = Direction.Up;
-		} else if (rbody.velocity.normalized == Vector2.down) {
+		} else if (dir == Vector2.down) {
 			direction = Direction.Down;
-		} else if (rbody.velocity.normalized == Vector2.left) {
+		} else if (dir == Vector2.left) {
 			direction = Direction.Left;
-		} else if (rbody.velocity.normalized == Vector2.right) {
+		} else if (dir == Vector2.right) {
 			direction = Direction.Right;
-		}
+        }
+        else { print(dir); }
 
 		Node currentNode = pathFinder.WorldPosToNode(transform.position);
 		CheckForFutureCollisions ();
 		if(pathFinder.IsNodeTurnable(currentNode) || pathFinder.GetNodeInDirection(currentNode, direction).isWall){
-			
+            //print(pathFinder.IsNodeTurnable(currentNode) + " " + currentNode.gridY + " " + currentNode.gridX);
 			switch (currentState) {
 			case State.CHASE:
 				DetermineTargetForChase ();
 			
-				currentPath = pathFinder.AStar (pathFinder.WorldPosToNode (transform.position), targetPoint);
+				currentPath = pathFinder.AStar (pathFinder.WorldPosToNode (transform.position), targetPoint, direction);
 				velocity = PathFollow ();
 				break;
 			case State.FRIGHTENED:
@@ -131,7 +136,7 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 				break;
 			case State.SCATTER:
 				GetScatterTarget ();
-				currentPath = pathFinder.AStar (pathFinder.WorldPosToNode (transform.position), targetPoint);
+				currentPath = pathFinder.AStar (pathFinder.WorldPosToNode (transform.position), targetPoint, direction);
 				velocity = PathFollow ();
 				break;
 			default:
