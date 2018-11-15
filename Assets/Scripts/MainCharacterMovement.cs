@@ -98,7 +98,7 @@ public class MainCharacterMovement : MonoBehaviour {
                         break;
                     case Dir.down:
                         transform.rotation = Quaternion.Euler(0, 0, 270);
-                        if (!pathFinder.grid[currentNode.gridX+1][currentNode.gridY].isWall)
+                        if (!pathFinder.grid[currentNode.gridX+1][currentNode.gridY].isWall&& !pathFinder.isHouseExit(pathFinder.grid[currentNode.gridX + 1][currentNode.gridY]))
                             targetNode = pathFinder.grid[currentNode.gridX+1][currentNode.gridY];
                         else
                         {
@@ -130,15 +130,15 @@ public class MainCharacterMovement : MonoBehaviour {
                 direction = Dir.right;
                 
             } 
-            if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W) && !pathFinder.grid[targetNode.gridX-1][targetNode.gridY].isWall)
+            if ((Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W)) && !pathFinder.grid[targetNode.gridX-1][targetNode.gridY].isWall)
             {
                 direction = Dir.up;
             }
-            if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A) && !pathFinder.grid[targetNode.gridX][targetNode.gridY-1].isWall)
+            if ((Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A)) && !pathFinder.grid[targetNode.gridX][targetNode.gridY-1].isWall)
             {
                 direction = Dir.left;
             }
-            if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S) && !pathFinder.grid[targetNode.gridX+1][targetNode.gridY].isWall)
+            if ((Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S)) && !pathFinder.grid[targetNode.gridX+1][targetNode.gridY].isWall && !pathFinder.isHouseExit(pathFinder.grid[currentNode.gridX + 1][currentNode.gridY]))
             {
                 direction = Dir.down;
             }
@@ -153,6 +153,10 @@ public class MainCharacterMovement : MonoBehaviour {
 
             if (collision.gameObject.name.Contains("Power"))
             {
+                foreach (GameObject g in GameObject.FindGameObjectsWithTag("ghost")) {
+                    
+                    g.GetComponent<UpdatedGhostMovement>().BecomeFrightened();
+                }
                 isInvincible = true;
                 invincibleTimer += invDurationPerPellet;   // power pellets stack
             }
@@ -160,17 +164,24 @@ public class MainCharacterMovement : MonoBehaviour {
             Destroy(collision.gameObject);
 
         }
-    }
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
         if (collision.gameObject.tag == "ghost")
         {
+            UpdatedGhostMovement singular = collision.gameObject.GetComponent<UpdatedGhostMovement>();
+            //GhostHivemindMovement hivemind = collision.gameObject.GetComponent<GhostHivemindMovement>();
+
+            if (singular && singular.respawn)
+                return;
 
             if (isInvincible)
             {
                 // do invincible behavior
                 ui.IncrementScore(ghostScore);
                 ghostScore *= 2;
+
+                if (singular)
+                    singular.Eaten();
+                //else if (hivemind)
+                //    // do this
             }
             else
             {
@@ -178,8 +189,8 @@ public class MainCharacterMovement : MonoBehaviour {
                 mapGen.DecLives();
 
                 GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
-                
-               
+
+
                 dead = true;
                 GetComponent<Animator>().SetBool("Dead", true);
                 GetComponent<CircleCollider2D>().enabled = false;
@@ -187,6 +198,10 @@ public class MainCharacterMovement : MonoBehaviour {
                 StartCoroutine(Respawn());
             }
         }
+    }
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        
     }
 
     IEnumerator Respawn()
