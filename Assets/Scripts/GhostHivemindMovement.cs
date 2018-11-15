@@ -16,10 +16,13 @@ public class GhostHivemindMovement : MonoBehaviour {
         Direction direction;
         float lerpTime;
 
+
         Node currentNode;
 
         string ghostName;
         bool respawn;
+
+        Vector3 originalPos;
 
 		public GhostData(string name, GameObject ghost, State originalState, Animator anim, PathFinding pathFinder){
             ghostName = name;
@@ -29,6 +32,7 @@ public class GhostHivemindMovement : MonoBehaviour {
             direction = Direction.Up;
             lerpTime = 0f;
             currentNode = pathFinder.WorldPosToNodeIncludingGhostHouse(ghost.transform.position);
+            originalPos = ghost.transform.position;
 
             respawn = false;
         }
@@ -87,6 +91,11 @@ public class GhostHivemindMovement : MonoBehaviour {
         {
             respawn = b;
         }
+        
+        public Vector3 getOriginalPos()
+        {
+            return originalPos;
+        }
 	}
 
 	Dictionary<string, GhostData> ghostMap;
@@ -105,8 +114,9 @@ public class GhostHivemindMovement : MonoBehaviour {
 	float frightenedTime;
 
 	float startTime;
+    public float exitTime;
 
-	float currentEndTime;
+    float currentEndTime;
 
     int currentEndIndex;
 
@@ -120,17 +130,20 @@ public class GhostHivemindMovement : MonoBehaviour {
         pathFinder = GameObject.FindGameObjectWithTag("pathfinding").GetComponent<PathFinding>();
         ghostMap = new Dictionary<string, GhostData> ();
 
-		GameObject blinky = GameObject.Find("Blinky(Clone)");
-		GameObject inky = GameObject.Find("Inky(Clone)");
-		GameObject pinky = GameObject.Find("Pinky(Clone)");
-		GameObject clyde = GameObject.Find("Clyde(Clone)");
+		GameObject blinky = GameObject.Find("Blinky 1(Clone)");
+		GameObject inky = GameObject.Find("Inky 1(Clone)");
+		GameObject pinky = GameObject.Find("Pinky 1(Clone)");
+		GameObject clyde = GameObject.Find("Clyde 1(Clone)");
 
-		//ghostMap.Add ("blinky", new GhostData ("blinky", blinky, waveStates [0], blinky.GetComponent<Animator> (), pathFinder));
-		//ghostMap.Add ("inky", new GhostData ("inky", inky, waveStates [0], inky.GetComponent<Animator> (), pathFinder));
-		ghostMap.Add ("pinky", new GhostData ("pinky", pinky, waveStates [0], pinky.GetComponent<Animator> (), pathFinder));
-		//ghostMap.Add ("clyde", new GhostData ("clyde", clyde, waveStates [0], clyde.GetComponent<Animator> (), pathFinder));
+        if (blinky == null)
+            print("blinky?");
 
-		pacman = GameObject.FindGameObjectWithTag ("pacman");
+        ghostMap.Add("blinky", new GhostData("blinky", blinky, waveStates[0], blinky.GetComponent<Animator>(), pathFinder));
+        ghostMap.Add("inky", new GhostData("inky", inky, waveStates[0], inky.GetComponent<Animator>(), pathFinder));
+        ghostMap.Add("pinky", new GhostData("pinky", pinky, waveStates[0], pinky.GetComponent<Animator>(), pathFinder));
+        ghostMap.Add("clyde", new GhostData("clyde", clyde, waveStates[0], clyde.GetComponent<Animator>(), pathFinder));
+
+        pacman = GameObject.FindGameObjectWithTag ("pacman");
 		pacmanNode = pathFinder.WorldPosToNode (pacman.transform.position);
 		frightenedTime = pacman.GetComponent<MainCharacterMovement> ().invincibleTimer;
 
@@ -138,7 +151,8 @@ public class GhostHivemindMovement : MonoBehaviour {
         currentEndIndex = 0;
 
         initialized = true;
-	}
+
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -505,4 +519,27 @@ public class GhostHivemindMovement : MonoBehaviour {
         }
     }
     */
+
+    public void Reset()
+    {
+        foreach(GhostData ghost in ghostMap)
+        {
+            ghost.getGhostObject().transform.position = ghost.getOriginalPos();
+            ghost.setDirection(Direction.Up);
+            if (exitTIme == 0f)
+            {
+                ghost.setGhostState(waveStates[0]);
+            }
+            else
+                ghost.setGhostState(State.DEFAULT);
+
+            currentEndTime = waveEndTimes.Length > 0 ? waveEndTimes[0] : -1f;
+            currentEndIndex = 0;
+            startTime = Time.time;
+            startExitTime = Time.time;
+            ghost.setCurrentNode(pathFinder.WorldPosToNodeIncludingGhostHouse(transform.position));
+            justBeenFlipped = false;
+            ghost.setLerpTime(0f);
+        }
+    }
 }

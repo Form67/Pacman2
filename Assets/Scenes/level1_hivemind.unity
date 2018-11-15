@@ -846,6 +846,30 @@ Prefab:
       value: 
       objectReference: {fileID: 1859314808643374, guid: f31b615680d18384a8b931a703b90ca6,
         type: 2}
+    - target: {fileID: 114692673678587096, guid: d187e86c0bc4c024fa152d11798fdf35,
+        type: 2}
+      propertyPath: blinky
+      value: 
+      objectReference: {fileID: 1390253288826638, guid: 811a0f5f15c7bc24081e42071733c94d,
+        type: 2}
+    - target: {fileID: 114692673678587096, guid: d187e86c0bc4c024fa152d11798fdf35,
+        type: 2}
+      propertyPath: inky
+      value: 
+      objectReference: {fileID: 1354036740339576, guid: 9fe262f072179b344b92ff7732b9b3b4,
+        type: 2}
+    - target: {fileID: 114692673678587096, guid: d187e86c0bc4c024fa152d11798fdf35,
+        type: 2}
+      propertyPath: pinky
+      value: 
+      objectReference: {fileID: 1000080204309678, guid: b11138cc58e11524e8d0fed9128005fc,
+        type: 2}
+    - target: {fileID: 114692673678587096, guid: d187e86c0bc4c024fa152d11798fdf35,
+        type: 2}
+      propertyPath: clyde
+      value: 
+      objectReference: {fileID: 1383840711856740, guid: 40739773b48151e42bf3cbc1f8fd9b6f,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d187e86c0bc4c024fa152d11798fdf35, type: 2}
   m_IsPrefabAsset: 0
