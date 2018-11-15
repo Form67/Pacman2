@@ -114,11 +114,12 @@ MonoBehaviour:
   - 5
   - 5
   - 5
-  maxVelocity: 1
+  maxVelocity: 2
   frightenedVelocity: 2
   frightenedTime: 7
   closeEnoughDistance: 0.1
   lookAheadIndexesForCollision: 2
+  lerpTime: 0
 --- !u!212 &212135883404971252
 SpriteRenderer:
   m_ObjectHideFlags: 1

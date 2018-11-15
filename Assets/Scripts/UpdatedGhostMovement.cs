@@ -84,11 +84,20 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
             currentEndTime = waveEndTimes.Length > currentEndIndex ? waveEndTimes[currentEndIndex] : -1f;
             currentState = waveStates[currentEndIndex];
             startTime = Time.time;
-        } else if (Time.time - startTime >= frightenedTime && currentState == State.FRIGHTENED) {
-            currentState = waveStates[currentEndIndex];
-            startTime = Time.time;
-            animator.SetBool("flash", false);
-            //rbody.velocity = rbody.velocity.normalized * maxVelocity;
+        } else if (currentState == State.FRIGHTENED) {
+
+            if (Time.time - startTime >= frightenedTime)
+            {
+                currentState = waveStates[currentEndIndex];
+                startTime = Time.time;
+                animator.SetBool("flash", false);
+                //rbody.velocity = rbody.velocity.normalized * maxVelocity;
+            }
+            // End of state is near
+            else if(frightenedTime - (Time.time - startTime) <= 2f)
+            {
+                animator.SetBool("flash", true);
+            }
         }
 
         if(lerpTime > 1f)
@@ -110,25 +119,24 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 			case State.FRIGHTENED:
 				currentPath = null;
 
-
 				List<Node> neighbors = pathFinder.GetNeighbors (currentNode);
 				//List<Vector3> possibleVelocities = new List<Vector3> ();
                 List<Direction> possibleDirections = new List<Direction>();
 				foreach (Node neighbor in neighbors) {
 					if (!neighbor.isWall) {
-						if (neighbor.pos.y > currentNode.pos.y) {
+						if (neighbor.pos.y > currentNode.pos.y && direction != Direction.Down) {
 							//possibleVelocities.Add (Vector3.up * frightenedVelocity);
                             possibleDirections.Add(Direction.Up);
 						}
-						if (neighbor.pos.y < currentNode.pos.y) {
+						if (neighbor.pos.y < currentNode.pos.y && direction != Direction.Up) {
 							//possibleVelocities.Add (Vector3.down * frightenedVelocity);
                                 possibleDirections.Add(Direction.Down);
                             }
-						if (neighbor.pos.x > currentNode.pos.x) {
+						if (neighbor.pos.x > currentNode.pos.x && direction != Direction.Left) {
 						
                                 possibleDirections.Add(Direction.Right);
 						}
-						if (neighbor.pos.x < currentNode.pos.x) {
+						if (neighbor.pos.x < currentNode.pos.x && direction != Direction.Right) {
 							possibleDirections.Add (Direction.Left);
 						}
 					}
@@ -171,7 +179,11 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 
 		}
         transform.position = PathFollow();
-        lerpTime += Time.deltaTime;
+
+        if (currentState == State.FRIGHTENED)
+            lerpTime += Time.deltaTime * maxVelocity * 0.5f;
+        else
+            lerpTime += Time.deltaTime * maxVelocity;
     }
 
 	Vector3 PathFollow(){
@@ -207,7 +219,7 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 		currentEndTime -= Time.time - startTime;
 		startTime = Time.time;
 		currentState = State.FRIGHTENED;
-		animator.SetBool ("flash", true);
+		animator.SetTrigger ("blue");
 		//rbody.velocity = rbody.velocity.normalized * frightenedVelocity;
 	}
 
