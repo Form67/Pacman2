@@ -185,7 +185,7 @@ public class PathFinding : MonoBehaviour {
 	}
 
 	public bool IsNodeTurnable(Node node){
-		if (node.isWall) {
+		if (node.isWall || isHouseExit(node)) {
 			return false;
 		}
 		List<Node> neighbors = GetNeighbors (node);
@@ -204,6 +204,23 @@ public class PathFinding : MonoBehaviour {
 		}
 		return nonWallNeighbors [0].gridX != nonWallNeighbors [1].gridX && nonWallNeighbors [0].gridY != nonWallNeighbors [1].gridY;
 
+	}
+
+	public Node GetNodeInDirection(Node node, Direction direction){
+		switch (direction) {
+
+		case(Direction.Up):
+			return ValidGridPos(node.gridX - 1, node.gridY) ? grid[node.gridX - 1][node.gridY] : null;
+		case(Direction.Down):
+			return ValidGridPos(node.gridX + 1, node.gridY) ? grid[node.gridX + 1][node.gridY] : null;
+		case(Direction.Left):
+			return ValidGridPos(node.gridX, node.gridY - 1) ? grid[node.gridX][node.gridY - 1] : null;
+		case(Direction.Right):
+			return ValidGridPos(node.gridX, node.gridY + 1) ? grid[node.gridX][node.gridY + 1] : null;
+
+		default:
+			return null;
+		}
 	}
 
     bool isHouseExit(Node n)
