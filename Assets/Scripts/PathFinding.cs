@@ -28,6 +28,29 @@ public class PathFinding : MonoBehaviour {
     // A-Star path finding algorithm
     public List<Node> AStar(Node start, Node target, Direction direction)
     {
+        // Handle the special case when pathfinding to same position
+        if(start == target)
+        {
+            List<Node> neighbors = GetNeighbors(start);
+            Node n = null;
+            foreach(Node neighbor in neighbors)
+            {
+                if (!neighbor.isWall)
+                {
+                    n = neighbor;
+                    break;
+                }
+            }
+
+            List<Node> partialPath = AStar(n, target, direction);
+
+            partialPath.Reverse();
+            partialPath.Add(start);
+            partialPath.Reverse();
+            return partialPath;
+        }
+
+
         List<Node> openList = new List<Node>();   // List of discovered nodes that haven't been evaluated yet
         List<Node> closedList = new List<Node>(); // List of nodes that have already been evaluated
 
@@ -48,7 +71,7 @@ public class PathFinding : MonoBehaviour {
             }
             
             // Check if target was reached
-            if (start != currentNode && currentNode.Equals(target))
+            if (currentNode.Equals(target))
             {
                 return ConstructPath(start, target);
             }
@@ -70,8 +93,8 @@ public class PathFinding : MonoBehaviour {
                 if (neighbor.isWall || closedList.Contains(neighbor))
                     continue;
 
-                // Igonre the node directly behind the ghost, if not looping 
-                if(currentNode == start && start != target)
+                // Ignore the node directly behind the ghost, if not looping 
+                if(currentNode == start)
                 {
                     Node behind = GetNodeInDirection(start, GetOppDirection(direction));  // the node is behind the player
 
