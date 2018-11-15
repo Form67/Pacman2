@@ -19,6 +19,7 @@ public class GhostHivemindMovement : MonoBehaviour {
         Node currentNode;
 
         string ghostName;
+        bool respawn;
 
 		public GhostData(string name, GameObject ghost, State originalState, Animator anim, PathFinding pathFinder){
             ghostName = name;
@@ -29,6 +30,7 @@ public class GhostHivemindMovement : MonoBehaviour {
             lerpTime = 0f;
             currentNode = pathFinder.WorldPosToNodeIncludingGhostHouse(ghost.transform.position);
 
+            respawn = false;
         }
 
 		public GameObject getGhostObject(){
@@ -74,6 +76,16 @@ public class GhostHivemindMovement : MonoBehaviour {
         public string getName()
         {
             return ghostName;
+        }
+
+        public bool getRespawn()
+        {
+            return respawn;
+        }
+
+        public void setRespawn(bool b)
+        {
+            respawn = b;
         }
 	}
 
@@ -134,7 +146,7 @@ public class GhostHivemindMovement : MonoBehaviour {
 
         foreach (GhostData data in ghostMap.Values)
         {
-            if (Time.time - startTime >= currentEndTime && currentEndTime != -1f && data.getGhostState() != State.FRIGHTENED)
+            if (Time.time - startTime >= currentEndTime && currentEndTime != -1f && data.getGhostState() != State.FRIGHTENED && !data.getRespawn())
             {
                 currentEndIndex++;
                 currentEndTime = waveEndTimes.Length > currentEndIndex ? waveEndTimes[currentEndIndex] : -1f;
@@ -155,12 +167,18 @@ public class GhostHivemindMovement : MonoBehaviour {
 
             if ((pathFinder.IsNodeTurnable(data.getCurrentNode()) || pathFinder.GetNodeInDirection(data.getCurrentNode(), data.getDirection()).isWall) && (data.getLerpTime() > 1f || data.getLerpTime() == 0f))
             {
+                // Reset respawn
+                if (data.getRespawn() == true && data.getCurrentNode() == pathFinder.grid[13][12])
+                {
+                    GetComponent<SpriteRenderer>().color = Color.white;
+                    data.setRespawn(false);
+                }
 
                 switch (data.getGhostState())
                 {
                     case State.CHASE:
 
-                        Node targetPoint = DetermineTargetForChase(data.getName());
+                        Node targetPoint = DetermineTargetForChase(data.getName(), data.getRespawn());
 
                         List<Node> currentPath = pathFinder.AStar(data.getCurrentNode(), targetPoint, data.getDirection());
 
@@ -252,23 +270,35 @@ public class GhostHivemindMovement : MonoBehaviour {
         return Vector3.Lerp(data.getCurrentNode().pos, target.pos, data.getLerpTime());
     }
 
-    Node DetermineTargetForChase(string ghostName)
+    Node DetermineTargetForChase(string ghostName, bool respawn)
     {
         if(ghostName == "blinky")
         {
-            return BlinkyDetermineTargetForChase();
+            if (respawn)
+                return pathFinder.grid[13][12];
+            else
+                return BlinkyDetermineTargetForChase();
         }
         if(ghostName == "inky")
         {
-            return InkyDetermineTargetForChase();
+            if (respawn)
+                return pathFinder.grid[13][12];
+            else
+                return InkyDetermineTargetForChase();
         }
         if(ghostName == "pinky")
         {
-            return PinkyDetermineTargetForChase();
+            if (respawn)
+                return pathFinder.grid[13][12];
+            else
+                return PinkyDetermineTargetForChase();
         }
         if(ghostName == "clyde")
         {
-            return ClydeDetermineTargetForChase();
+            if (respawn)
+                return pathFinder.grid[13][12];
+            else
+                return ClydeDetermineTargetForChase();
         }
         return null;
     }
@@ -303,6 +333,16 @@ public class GhostHivemindMovement : MonoBehaviour {
         startTime = Time.time;
         
         
+    }
+
+    public void Eaten(string ghostName)
+    {
+        GhostData theGhost = ghostMap[ghostName];
+        theGhost.setRespawn(true);
+        theGhost.getGhostAnimator().SetBool("flash", false);
+        theGhost.setGhostState(State.CHASE);
+        theGhost.getGhostObject().GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0.3f);
+
     }
 
 	Node BlinkyDetermineTargetForChase(){
@@ -445,7 +485,7 @@ public class GhostHivemindMovement : MonoBehaviour {
 
         foreach (UpdatedGhostMovement ghost in ghostsList)
         {
-            if (this.currentNode == ghost.currentNode || frontNode == ghost.currentNode)
+            if (!ghost.respawn && (this.currentNode == ghost.currentNode || frontNode == ghost.currentNode))
             {
                 ghost.FlipDirection();
                 ghost.ResetLerpTime();

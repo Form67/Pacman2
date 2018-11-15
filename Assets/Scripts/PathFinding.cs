@@ -235,14 +235,16 @@ public class PathFinding : MonoBehaviour {
 		return numPathNeighbors > 2;
 	}
 
-	public bool IsNodeTurnable(Node node){
-		if (node.isWall || isHouseExit(node)) {
+	public bool IsNodeTurnable(Node node, bool respawn = false){
+		if (node.isWall || (isHouseExit(node) && !respawn)) {
 			return false;
 		}
 		List<Node> neighbors = GetNeighbors (node);
 		List<Node> nonWallNeighbors = new List<Node> ();
 		foreach (Node neighbor in neighbors) {
-			if (!neighbor.isWall && !isHouseExit(neighbor)) {
+			if (!neighbor.isWall) {
+                if (!respawn && isHouseExit(neighbor))
+                    continue;
 				nonWallNeighbors.Add (neighbor);
 			}
 		}

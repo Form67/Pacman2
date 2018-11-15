@@ -169,12 +169,22 @@ public class MainCharacterMovement : MonoBehaviour {
     {
         if (collision.gameObject.tag == "ghost")
         {
+            UpdatedGhostMovement singular = collision.gameObject.GetComponent<UpdatedGhostMovement>();
+            //GhostHivemindMovement hivemind = collision.gameObject.GetComponent<GhostHivemindMovement>();
+
+            if (singular && singular.respawn)
+                return;
 
             if (isInvincible)
             {
                 // do invincible behavior
                 ui.IncrementScore(ghostScore);
                 ghostScore *= 2;
+
+                if (singular)
+                    singular.Eaten();
+                //else if (hivemind)
+                //    // do this
             }
             else
             {
