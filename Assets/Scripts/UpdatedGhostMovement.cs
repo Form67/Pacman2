@@ -69,11 +69,12 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
         }
         pathFinder = GameObject.FindGameObjectWithTag("pathfinding").GetComponent<PathFinding>();
         currentIndexOnPath = 0;
+        currentNode = pathFinder.WorldPosToNode(transform.position);
     }
 
     // Update is called once per frame
     void Update() {
-        currentNode = pathFinder.WorldPosToNode(transform.position);
+        //currentNode = pathFinder.WorldPosToNode(transform.position);
 
         if (pacman == null)
         {
@@ -91,7 +92,10 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
             rbody.velocity = rbody.velocity.normalized * maxVelocity;
         }
 
-
+        if(lerpTime > 1f)
+        {
+            currentNode = pathFinder.GetNodeInDirection(currentNode, direction);
+        }
 
         CheckForFutureCollisions();
         if ((pathFinder.IsNodeTurnable(currentNode) || pathFinder.GetNodeInDirection(currentNode, direction).isWall) && (lerpTime > 1f || lerpTime == 0f )){
@@ -100,9 +104,9 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 			case State.CHASE:
 				DetermineTargetForChase ();
 			
-				currentPath = pathFinder.AStar (pathFinder.WorldPosToNode (transform.position), targetPoint, direction);
+				currentPath = pathFinder.AStar (currentNode, targetPoint, direction);
 
-                currentIndexOnPath = 0;
+                //currentIndexOnPath = 0;
                 direction = GetDirectionBetweenNodes(currentNode, currentPath[1]);
 				break;
 			case State.FRIGHTENED:
@@ -132,7 +136,7 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 				break;
 			case State.SCATTER:
 				GetScatterTarget ();
-				currentPath = pathFinder.AStar (pathFinder.WorldPosToNode (transform.position), targetPoint, direction);
+				currentPath = pathFinder.AStar (currentNode, targetPoint, direction);
                     currentIndexOnPath = 0;
                     direction = GetDirectionBetweenNodes(currentNode, currentPath[1]);
                     break;
@@ -159,14 +163,18 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
     }
 
 	Vector3 PathFollow(){
-		if(lerpTime > 1f)
-        {
-            currentIndexOnPath++;
-        }
-
         Node target = pathFinder.GetNodeInDirection(currentNode, direction);
+       /* if (lerpTime > 1f)
+        {
+            //currentIndexOnPath++;
+            //currentNode = currentPath[currentIndexOnPath];
+            currentNode = target;
+            target = pathFinder.GetNodeInDirection(currentNode, direction);
+        }*/
 
-		return KinematicSeek (currentPath[currentIndexOnPath].pos, currentPath[currentIndexOnPath + 1].pos);
+        //Node target = pathFinder.GetNodeInDirection(currentNode, direction);
+        //print(currentNode);
+		return KinematicSeek (currentNode.pos, target.pos);
 	}
 
 	Vector3 StaticSeek(Vector3 position, Vector3 target){
@@ -175,6 +183,7 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
     Vector3 KinematicSeek(Vector3 position, Vector3 target) {
         if (lerpTime > 1f) {
             lerpTime = 0f;
+            
             }
         return Vector3.Lerp(position, target,lerpTime);
     }
@@ -227,6 +236,7 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
     }
 
     Direction GetDirectionBetweenNodes(Node first, Node second) {
+        //print("getting direction between nodes " + first.gridY + " " + first.gridX + " " + second.gridY + " " + second.gridX);
         if(first.gridX == second.gridX) {
             if(first.gridY == second.gridY - 1) {
                 return Direction.Right;
