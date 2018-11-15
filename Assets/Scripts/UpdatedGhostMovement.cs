@@ -21,6 +21,8 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 	public float frightenedVelocity;
 
 	public float frightenedTime;
+    public float speed;
+
 
 	Animator animator;
     Direction direction;
@@ -72,7 +74,7 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         currentNode = pathFinder.WorldPosToNode(transform.position);
-        lerpTime += Time.deltaTime;
+        lerpTime += Time.deltaTime*speed;
         if (pacman == null)
         {
             pacman = GameObject.FindGameObjectWithTag("pacman");
@@ -92,7 +94,7 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 		Vector3 velocity;
 
 		CheckForFutureCollisions ();
-		if(pathFinder.IsNodeTurnable(currentNode) || pathFinder.GetNodeInDirection(currentNode, direction).isWall){
+		//if(pathFinder.IsNodeTurnable(currentNode) || pathFinder.GetNodeInDirection(currentNode, direction).isWall){
 			
 			switch (currentState) {
 			case State.CHASE:
@@ -149,7 +151,7 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 			}
 
 		}
-	}
+//	}
 
 	Vector3 PathFollow(){
 		if (currentPath.Count == 0) {
@@ -181,8 +183,8 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 		if (currentPath != null) {
 			foreach (UpdatedGhostMovement ghostScript in ghostsList) {
 				if (ghostScript.currentPath != null) {
-					for (int i = 0; i < lookAheadIndexesForCollision; ++i) {
-						for (int j = 0; j < lookAheadIndexesForCollision; ++j) {
+					for (int i = 0; i < 0; ++i) {
+						for (int j = 0; j < 0; ++j) {
 							if (currentPath [i] == ghostScript.currentPath [j]) {
 								rbody.velocity = -rbody.velocity;
 								return;
