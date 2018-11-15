@@ -116,9 +116,15 @@ public class mapGenerator : MonoBehaviour {
 
         ui.ReadHighScore();
 
+
         // Send new board to pathfinding algo
         path.InitGraph(new List<GameObject[]>(board));
-	}
+
+        GhostHivemindMovement hiveMind = FindObjectOfType<GhostHivemindMovement>();
+
+        if (hiveMind)
+            hiveMind.Init();
+    }
 	
 	// Update is called once per frame
 	void Update () {
