@@ -2,7 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class UpdatedGhostMovement : MonoBehaviour {
+[System.Serializable]
+public enum State
+{
+    DEFAULT,
+    CHASE,
+    SCATTER,
+    FRIGHTENED
+}
 
 public abstract class UpdatedGhostMovement : MonoBehaviour {
 

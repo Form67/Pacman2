@@ -140,13 +140,13 @@ public class PathFinding : MonoBehaviour {
 
         path.Reverse();
 
-        string line = "";
-        foreach(Node p in path)
-        {
-            line += " (" + p.gridY + ", " + p.gridX + ")";
-        }
+        //string line = "";
+        //foreach(Node p in path)
+        //{
+        //    line += " (" + p.gridY + ", " + p.gridX + ")";
+        //}
 
-        print("Path: " + line);
+        //print("Path: " + line);
         return path;
     }
 

@@ -56,10 +56,4 @@ public class Node {
     {
         return "(" + gridY + " " + gridX + ")";
     }
-
-    public override string ToString()
-    {
-        return "(" + this.gridY + ", " + this.gridX + ")";
-    }
-
 }
