@@ -180,7 +180,28 @@ public class PathFinding : MonoBehaviour {
         return closest;
     }
 
-	public bool IsNodeIntersection(Node node){
+    public Node WorldPosToNodeIncludingGhostHouse(Vector3 pos)
+    {
+        Node closest = null;
+        float closestDist = float.MaxValue;
+
+        for (int x = 0; x < numRows; x++)
+        {
+            for (int y = 0; y < numCols; y++)
+            {
+                float dist = Vector3.Distance(pos, grid[x][y].pos);
+                if (dist < closestDist && !grid[x][y].isWall && !isHouseExit(grid[x][y]))
+                {
+                    closest = grid[x][y];
+                    closestDist = dist;
+                }
+            }
+        }
+
+        return closest;
+    }
+
+    public bool IsNodeIntersection(Node node){
 		List<Node> neighbors = GetNeighbors (node);
 		int numPathNeighbors = 0;
 		foreach (Node neighbor in neighbors) {

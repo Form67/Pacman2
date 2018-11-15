@@ -69,7 +69,7 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
         }
         pathFinder = GameObject.FindGameObjectWithTag("pathfinding").GetComponent<PathFinding>();
         currentIndexOnPath = 0;
-        currentNode = pathFinder.WorldPosToNode(transform.position);
+        currentNode = pathFinder.WorldPosToNodeIncludingGhostHouse(transform.position);
     }
 
     // Update is called once per frame
@@ -105,7 +105,7 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 				DetermineTargetForChase ();
 			
 				currentPath = pathFinder.AStar (currentNode, targetPoint, direction);
-
+                    print(currentPath.Count);
                 //currentIndexOnPath = 0;
                 direction = GetDirectionBetweenNodes(currentNode, currentPath[1]);
 				break;
