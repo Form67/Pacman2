@@ -46,9 +46,12 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 
     protected GameObject pacman;
 
+    public float lerpTime;
+    Node currentNode;
 	// Use this for initialization
 	protected void Start () {
-		currentState = waveStates [0];
+        
+        currentState = waveStates [0];
 		currentEndTime = waveEndTimes.Length > 0 ? waveEndTimes [0] : -1f;
 		currentEndIndex = 0;
 		startTime = Time.time;
@@ -67,8 +70,13 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-
-		if (Time.time - startTime >= currentEndTime && currentEndTime != -1f && currentState != State.FRIGHTENED) {
+        currentNode = pathFinder.WorldPosToNode(transform.position);
+        lerpTime += Time.deltaTime;
+        if (pacman == null)
+        {
+            pacman = GameObject.FindGameObjectWithTag("pacman");
+        }
+        if (Time.time - startTime >= currentEndTime && currentEndTime != -1f && currentState != State.FRIGHTENED) {
 			currentEndIndex++;
 			currentEndTime = waveEndTimes.Length > currentEndIndex ? waveEndTimes [currentEndIndex] : -1f;
 			currentState = waveStates [currentEndIndex];
@@ -98,7 +106,6 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
         }
         else { print(dir); }
 
-		Node currentNode = pathFinder.WorldPosToNode(transform.position);
 		CheckForFutureCollisions ();
 		if(pathFinder.IsNodeTurnable(currentNode) || pathFinder.GetNodeInDirection(currentNode, direction).isWall){
             //print(pathFinder.IsNodeTurnable(currentNode) + " " + currentNode.gridY + " " + currentNode.gridX);
@@ -107,7 +114,7 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 				DetermineTargetForChase ();
 			
 				currentPath = pathFinder.AStar (pathFinder.WorldPosToNode (transform.position), targetPoint, direction);
-				velocity = PathFollow ();
+				transform.position = PathFollow ();
 				break;
 			case State.FRIGHTENED:
 				currentPath = null;
@@ -137,13 +144,13 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 			case State.SCATTER:
 				GetScatterTarget ();
 				currentPath = pathFinder.AStar (pathFinder.WorldPosToNode (transform.position), targetPoint, direction);
-				velocity = PathFollow ();
+				transform.position = PathFollow ();
 				break;
 			default:
 				velocity = Vector3.zero;
 				break;
 			}
-			rbody.velocity = velocity;
+			//rbody.velocity = velocity;
 			if (currentState != State.FRIGHTENED) {
 				if (rbody.velocity.x > 0) {
 					animator.SetTrigger ("goright");
@@ -161,15 +168,17 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 
 	Vector3 PathFollow(){
 		if (currentPath.Count == 0) {
-			return Vector3.zero;
+			return transform.position;
 		}
-		return StaticSeek (transform.position, currentPath.Count > 1 ? currentPath [1].pos : currentPath[0].pos);
+		return KinematicSeek (currentPath[0].pos, currentPath.Count > 1 ? currentPath [1].pos : currentPath[0].pos);
 	}
 
 	Vector3 StaticSeek(Vector3 position, Vector3 target){
 		return (target - position).normalized * maxVelocity;
 	}
-
+    Vector3 KinematicSeek(Vector3 position, Vector3 target) {
+        return Vector3.Lerp(position, target,lerpTime);
+    }
 	protected void SetTargetPointPoint (Node point){
 		targetPoint = point;
 	}
