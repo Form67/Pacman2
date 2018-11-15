@@ -50,7 +50,7 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
     Node currentNode;
 	// Use this for initialization
 	protected void Start () {
-        currentNode = pathFinder.WorldPosToNode(transform.position);
+        
         currentState = waveStates [0];
 		currentEndTime = waveEndTimes.Length > 0 ? waveEndTimes [0] : -1f;
 		currentEndIndex = 0;
@@ -70,6 +70,7 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        currentNode = pathFinder.WorldPosToNode(transform.position);
         lerpTime += Time.deltaTime;
         if (pacman == null)
         {
