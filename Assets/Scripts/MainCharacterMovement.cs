@@ -167,7 +167,7 @@ public class MainCharacterMovement : MonoBehaviour {
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.tag == "ghost")
+        if (collision.gameObject.tag == "ghost" && !collision.gameObject.GetComponent<UpdatedGhostMovement>().respawn)
         {
 
             if (isInvincible)
@@ -175,6 +175,7 @@ public class MainCharacterMovement : MonoBehaviour {
                 // do invincible behavior
                 ui.IncrementScore(ghostScore);
                 ghostScore *= 2;
+                collision.gameObject.GetComponent<UpdatedGhostMovement>().Eaten();
             }
             else
             {

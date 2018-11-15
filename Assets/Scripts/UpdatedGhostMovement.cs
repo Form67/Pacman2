@@ -52,6 +52,8 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 
     [HideInInspector]
     public Node currentNode;
+    [HideInInspector]
+    public bool respawn = false;
 
     // Use this for initialization
     protected void Start() {
@@ -82,7 +84,7 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
         {
             pacman = GameObject.FindGameObjectWithTag("pacman");
         }
-        if (Time.time - startTime >= currentEndTime && currentEndTime != -1f && currentState != State.FRIGHTENED) {
+        if (Time.time - startTime >= currentEndTime && currentEndTime != -1f && currentState != State.FRIGHTENED && respawn == false) {
             currentEndIndex++;
             currentEndTime = waveEndTimes.Length > currentEndIndex ? waveEndTimes[currentEndIndex] : -1f;
             currentState = waveStates[currentEndIndex];
@@ -103,19 +105,28 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
             }
         }
 
+        // Ghost reached respawn
+        if (respawn == true && currentNode == pathFinder.grid[13][12])
+        {
+            GetComponent<SpriteRenderer>().color = Color.white;
+            respawn = false;
+
+        }
 
         if (lerpTime > 1f)
         {
             currentNode = pathFinder.GetNodeInDirection(currentNode, direction);
         }
-        
-        CheckForFutureCollisions();
-        if ((pathFinder.IsNodeTurnable(currentNode) || pathFinder.GetNodeInDirection(currentNode, direction).isWall) && (lerpTime > 1f || lerpTime == 0f )){
-           
+
+        HandleCollisions();
+        //CheckForFutureCollisions();
+        if ((pathFinder.IsNodeTurnable(currentNode, respawn) || pathFinder.GetNodeInDirection(currentNode, direction).isWall) && (lerpTime > 1f || lerpTime == 0f )){
 			switch (currentState) {
 			case State.CHASE:
-				DetermineTargetForChase ();
-			
+
+                if(respawn == false)
+				    DetermineTargetForChase ();
+                
 				currentPath = pathFinder.AStar (currentNode, targetPoint, direction);
                   
                 direction = GetDirectionBetweenNodes(currentNode, currentPath[1]);
@@ -163,11 +174,9 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 			if (currentState != State.FRIGHTENED) {
                 switch (direction)
                 {
-
                     case (Direction.Right):
                     animator.SetTrigger("goright");
                         break;
-
                     case (Direction.Left):
                     animator.SetTrigger("goleft");
                         break;
@@ -177,7 +186,7 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
                     case (Direction.Down):
                     animator.SetTrigger("godown");
                         break;
-            }
+                }
                 
 			}
 
@@ -244,13 +253,13 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
     //	}
     //}
     
-    protected void CheckForFutureCollisions()
+    protected void HandleCollisions()
     {
         Node frontNode = pathFinder.GetNodeInDirection(currentNode, direction);
 
         foreach (UpdatedGhostMovement ghost in ghostsList)
         {
-            if (this.currentNode == ghost.currentNode || frontNode == ghost.currentNode)
+            if (!ghost.respawn && (this.currentNode == ghost.currentNode || frontNode == ghost.currentNode))
             {
                 ghost.FlipDirection();
                 ghost.ResetLerpTime();
@@ -309,14 +318,17 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
         lerpTime = 0;
     }
 
-	abstract protected void DetermineTargetForChase ();
-
-	abstract protected void GetScatterTarget ();
-
 
     public void Eaten()
     {
-
+        animator.SetBool("flash", false);
+        currentState = State.CHASE;
+        targetPoint = pathFinder.grid[13][12];
+        respawn = true;
+        GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0.3f);
     }
 
+    abstract protected void DetermineTargetForChase ();
+
+	abstract protected void GetScatterTarget ();
 }
