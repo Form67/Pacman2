@@ -52,6 +52,10 @@ public class Node {
         return this.pos == n.pos;
     }
 
+    public override string ToString()
+    {
+        return "(" + gridY + " " + gridX + ")";
+    }
 
     public override string ToString()
     {
