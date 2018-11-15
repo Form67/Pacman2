@@ -58,48 +58,6 @@ public class PathFinding : MonoBehaviour {
             openList.Remove(currentNode);
             closedList.Add(currentNode);
 
-
-
-            // Can only move in one direction through an aisle
-            if (!IsNodeIntersection(currentNode))
-            {
-                print(dir);
-                Node neighbor = null;
-                if (dir == Direction.Up)
-                {
-                    neighbor = grid[currentNode.gridX][currentNode.gridY + 1];
-                }
-                else if (dir == Direction.Down)
-                {
-                    neighbor = grid[currentNode.gridX][currentNode.gridY + 1];
-                }
-                else if (dir == Direction.Left)
-                {
-                    neighbor = grid[currentNode.gridX - 1][currentNode.gridY];
-                }
-                else if (dir == Direction.Right)
-                {
-                    neighbor = grid[currentNode.gridX + 1][currentNode.gridY];
-                }
-
-                if (neighbor != null && neighbor.isWall == false)
-                {
-                    if (!openList.Contains(neighbor))
-                    {
-                        openList.Add(neighbor);
-                    }
-
-                    neighbor.gCost = currentNode.gCost + ManhattanDistance(currentNode, neighbor);
-                    neighbor.hCost = ManhattanDistance(currentNode, neighbor);
-                    neighbor.parent = currentNode;
-
-                    print("Added non default");
-
-                    continue;
-                }
-
-                print("Added default");
-            }
             // Perform regular path finding (can proceed to any non-wall neighbor)
             // Visit all the neighbors of the current node
             List<Node> neighbors = GetNeighbors(currentNode);
