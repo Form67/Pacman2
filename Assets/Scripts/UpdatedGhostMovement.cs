@@ -23,8 +23,9 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 	public float frightenedTime;
 
 	Animator animator;
+    Direction direction;
 
-	public float closeEnoughDistance;
+    public float closeEnoughDistance;
 
 	public int lookAheadIndexesForCollision;
 
@@ -50,7 +51,7 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
     Node currentNode;
 	// Use this for initialization
 	protected void Start () {
-        
+        direction = Direction.Up;
         currentState = waveStates [0];
 		currentEndTime = waveEndTimes.Length > 0 ? waveEndTimes [0] : -1f;
 		currentEndIndex = 0;
@@ -89,22 +90,6 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
 		}
 
         Vector3 velocity;
-
-        Vector2 dir = rbody.velocity.normalized;
-        dir = new Vector2(Mathf.RoundToInt(dir.x), Mathf.RoundToInt(dir.y));
-
-
-        Direction direction = Direction.None;
-		if (dir == Vector2.up) {
-			direction = Direction.Up;
-		} else if (dir == Vector2.down) {
-			direction = Direction.Down;
-		} else if (dir == Vector2.left) {
-			direction = Direction.Left;
-		} else if (dir == Vector2.right) {
-			direction = Direction.Right;
-        }
-        else { print(dir); }
 
 		CheckForFutureCollisions ();
 		if(pathFinder.IsNodeTurnable(currentNode) || pathFinder.GetNodeInDirection(currentNode, direction).isWall){
