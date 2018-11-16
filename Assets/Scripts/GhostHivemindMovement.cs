@@ -116,9 +116,7 @@ public class GhostHivemindMovement : MonoBehaviour {
 	public float[] waveEndTimes;
 
 	public float maxVelocity;
-
-	public float frightenedVelocity;
-
+    
 	float frightenedTime;
 
     float startTime;
@@ -143,8 +141,6 @@ public class GhostHivemindMovement : MonoBehaviour {
 		GameObject pinky = GameObject.Find("Pinky 1(Clone)");
 		GameObject clyde = GameObject.Find("Clyde 1(Clone)");
 
-        if (blinky == null)
-            print("blinky?");
 
         ghostMap.Add("blinky", new GhostData("blinky", blinky, State.DEFAULT, blinky.GetComponent<Animator>(), pathFinder, 0));
         ghostMap.Add("inky", new GhostData("inky", inky, State.DEFAULT, inky.GetComponent<Animator>(), pathFinder, 5));
@@ -204,7 +200,7 @@ public class GhostHivemindMovement : MonoBehaviour {
                 // Ghost reached respawn
                 if (data.getRespawn() == true && data.getCurrentNode() == pathFinder.grid[13][12])
                 {
-                    GetComponent<SpriteRenderer>().color = Color.white;
+                    data.getGhostObject().GetComponent<SpriteRenderer>().color = Color.white;
                     data.setRespawn(false);
                 }
 
@@ -386,7 +382,7 @@ public class GhostHivemindMovement : MonoBehaviour {
     public void BecomeFrightened(){
 		foreach (GhostData ghostData in ghostMap.Values) {
 			ghostData.setGhostState (State.FRIGHTENED);
-            ghostData.getGhostAnimator().SetBool("flash", true);
+            ghostData.getGhostAnimator().SetTrigger("blue");
         }
         currentEndTime -= Time.time - startTime;
         startTime = Time.time;

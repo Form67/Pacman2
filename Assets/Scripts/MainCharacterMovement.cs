@@ -195,19 +195,19 @@ public class MainCharacterMovement : MonoBehaviour {
                     string ghostName = collision.gameObject.name;
                     if (ghostName.Contains("Blinky"))
                     {
-                        hivemind.Eaten("Blinky");
+                        hivemind.Eaten("blinky");
                     }
                     else if (ghostName.Contains("Pinky"))
                     {
-                        hivemind.Eaten("Pinky");
+                        hivemind.Eaten("pinky");
                     }
                     else if (ghostName.Contains("Inky"))
                     {
-                        hivemind.Eaten("Inky");
+                        hivemind.Eaten("inky");
                     }
                     else if (ghostName.Contains("Clyde"))
                     {
-                        hivemind.Eaten("Clyde");
+                        hivemind.Eaten("clyde");
                     }
                 }
                 else if(singular)
