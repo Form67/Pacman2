@@ -174,11 +174,10 @@ public class GhostHivemindMovement : MonoBehaviour {
         }
         
         pacmanNode = pathFinder.WorldPosToNode (pacman.transform.position);
-        
 
         foreach (GhostData data in ghostMap.Values)
         {
-            if (data.getGhostState() == State.DEFAULT)
+            if (data.getGhostState() != State.DEFAULT)
             {
                 if (Time.time - startTime >= currentEndTime && currentEndTime != -1f && data.getGhostState() != State.FRIGHTENED && !data.getRespawn())
                 {
@@ -217,14 +216,16 @@ public class GhostHivemindMovement : MonoBehaviour {
 
                 HandleCollisions(data);
 
-                if ((pathFinder.IsNodeTurnable(data.getCurrentNode()) || pathFinder.GetNodeInDirection(data.getCurrentNode(), data.getDirection()).isWall) && (data.getLerpTime() > 1f || data.getLerpTime() == 0f))
+                if ((pathFinder.IsNodeTurnable(data.getCurrentNode(), data.getRespawn()) || pathFinder.GetNodeInDirection(data.getCurrentNode(), data.getDirection()).isWall) && (data.getLerpTime() > 1f || data.getLerpTime() == 0f))
                 {
-                   
                     switch (data.getGhostState())
                     {
                         case State.CHASE:
-
-                            Node targetPoint = DetermineTargetForChase(data.getName(), data.getRespawn());
+                            Node targetPoint;
+                            if (data.getRespawn())
+                                targetPoint = pathFinder.grid[13][12];
+                            else
+                                targetPoint = DetermineTargetForChase(data.getName(), data.getRespawn());
 
                             List<Node> currentPath = pathFinder.AStar(data.getCurrentNode(), targetPoint, data.getDirection());
 
@@ -295,9 +296,10 @@ public class GhostHivemindMovement : MonoBehaviour {
                     }
 
                 }
+
                 data.getGhostObject().transform.position = LerpMovement(data);
 
-                data.setLerpTime(data.getLerpTime() + Time.deltaTime * (data.getGhostState() == State.FRIGHTENED ? frightenedVelocity : maxVelocity));
+                data.setLerpTime(data.getLerpTime() + Time.deltaTime * (data.getGhostState() == State.FRIGHTENED ? maxVelocity * 0.5f : maxVelocity));
             }
             else
             {
@@ -322,6 +324,7 @@ public class GhostHivemindMovement : MonoBehaviour {
         {
             data.setLerpTime(0f);
         }
+        
         return Vector3.Lerp(data.getCurrentNode().pos, target.pos, data.getLerpTime());
     }
 
