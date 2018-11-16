@@ -155,10 +155,19 @@ public class MainCharacterMovement : MonoBehaviour {
 
             if (collision.gameObject.name.Contains("Power"))
             {
-                foreach (GameObject g in GameObject.FindGameObjectsWithTag("ghost")) {
-                    
-                    g.GetComponent<UpdatedGhostMovement>().BecomeFrightened();
+
+                GhostHivemindMovement hivemind = FindObjectOfType<GhostHivemindMovement>();
+                if (hivemind)
+                    hivemind.BecomeFrightened();
+                else
+                {
+                    foreach (GameObject g in GameObject.FindGameObjectsWithTag("ghost"))
+                    {
+
+                        g.GetComponent<UpdatedGhostMovement>().BecomeFrightened();
+                    }
                 }
+
                 isInvincible = true;
                 invincibleTimer += invDurationPerPellet;   // power pellets stack
             }
@@ -168,8 +177,9 @@ public class MainCharacterMovement : MonoBehaviour {
         }
         if (collision.gameObject.tag == "ghost")
         {
+
+            GhostHivemindMovement hivemind = FindObjectOfType<GhostHivemindMovement>();
             UpdatedGhostMovement singular = collision.gameObject.GetComponent<UpdatedGhostMovement>();
-            //GhostHivemindMovement hivemind = collision.gameObject.GetComponent<GhostHivemindMovement>();
 
             if (singular && singular.respawn)
                 return;
@@ -180,10 +190,28 @@ public class MainCharacterMovement : MonoBehaviour {
                 ui.IncrementScore(ghostScore);
                 ghostScore *= 2;
 
-                if (singular)
+                if (hivemind)
+                {
+                    string ghostName = collision.gameObject.name;
+                    if (ghostName.Contains("Blinky"))
+                    {
+                        hivemind.Eaten("blinky");
+                    }
+                    else if (ghostName.Contains("Pinky"))
+                    {
+                        hivemind.Eaten("pinky");
+                    }
+                    else if (ghostName.Contains("Inky"))
+                    {
+                        hivemind.Eaten("inky");
+                    }
+                    else if (ghostName.Contains("Clyde"))
+                    {
+                        hivemind.Eaten("clyde");
+                    }
+                }
+                else if(singular)
                     singular.Eaten();
-                //else if (hivemind)
-                //    // do this
             }
             else
             {

@@ -34,6 +34,8 @@ public class mapGenerator : MonoBehaviour {
 
     PathFinding path;
     UIDisplay ui;
+    GhostHivemindMovement hive;
+
     int lives = 3;
     public int score = 0;
 
@@ -41,6 +43,7 @@ public class mapGenerator : MonoBehaviour {
     {
         path = FindObjectOfType<PathFinding>();
         ui = FindObjectOfType<UIDisplay>();
+        hive = FindObjectOfType<GhostHivemindMovement>();
     }
 
     // Use this for initialization
@@ -122,11 +125,9 @@ public class mapGenerator : MonoBehaviour {
 
         // Send new board to pathfinding algo
         path.InitGraph(new List<GameObject[]>(board));
-
-        GhostHivemindMovement hiveMind = FindObjectOfType<GhostHivemindMovement>();
-
-        if (hiveMind)
-            hiveMind.Init();
+        
+        if (hive)
+            hive.Init();
     }
 	
 	// Update is called once per frame
@@ -348,9 +349,16 @@ public class mapGenerator : MonoBehaviour {
         GameObject currLevel = GameObject.FindGameObjectWithTag("level");
         GameObject pacmanSpawned = Instantiate(pacman, currLevel.transform);
         pacmanSpawned.transform.position = originalPacmanPosition;
-        foreach (GameObject ghost in GameObject.FindGameObjectsWithTag("ghost"))
+
+
+        if (hive)
+            hive.Reset();
+        else
         {
-            ghost.GetComponent<UpdatedGhostMovement>().Reset();
+            foreach (GameObject ghost in GameObject.FindGameObjectsWithTag("ghost"))
+            {
+                ghost.GetComponent<UpdatedGhostMovement>().Reset();
+            }
         }
     }
 

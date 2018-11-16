@@ -139,6 +139,14 @@ public class PathFinding : MonoBehaviour {
         path.Add(currentNode);  // add the start node
 
         path.Reverse();
+
+        //string line = "";
+        //foreach(Node p in path)
+        //{
+        //    line += " (" + p.gridY + ", " + p.gridX + ")";
+        //}
+
+        //print("Path: " + line);
         return path;
     }
 

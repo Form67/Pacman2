@@ -56,6 +56,4 @@ public class Node {
     {
         return "(" + gridY + " " + gridX + ")";
     }
-
-
 }
