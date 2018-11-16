@@ -349,13 +349,17 @@ public class mapGenerator : MonoBehaviour {
         GameObject currLevel = GameObject.FindGameObjectWithTag("level");
         GameObject pacmanSpawned = Instantiate(pacman, currLevel.transform);
         pacmanSpawned.transform.position = originalPacmanPosition;
-        foreach (GameObject ghost in GameObject.FindGameObjectsWithTag("ghost"))
-        {
-            ghost.GetComponent<UpdatedGhostMovement>().Reset();
-        }
+
 
         if (hive)
             hive.Reset();
+        else
+        {
+            foreach (GameObject ghost in GameObject.FindGameObjectsWithTag("ghost"))
+            {
+                ghost.GetComponent<UpdatedGhostMovement>().Reset();
+            }
+        }
     }
 
 	void ResetLevel(){

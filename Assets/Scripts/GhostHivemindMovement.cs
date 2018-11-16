@@ -164,6 +164,11 @@ public class GhostHivemindMovement : MonoBehaviour {
         if (!initialized)
             return;
 
+        if(ghostMap["blinky"].getGhostObject() == null)
+        {
+            Init();
+        }
+
         if(pacman == null)
         {
             pacman = GameObject.FindGameObjectWithTag("pacman");
@@ -202,7 +207,7 @@ public class GhostHivemindMovement : MonoBehaviour {
                         //data.setGhostState(waveStates[currentEndIndex]);
                         startTime = Time.time;
                         
-                        print("frighten end");
+                        
                     }
                     // End of state is near
                     else if (frightenedTime - (Time.time - startTime) <= 2f)
@@ -306,9 +311,9 @@ public class GhostHivemindMovement : MonoBehaviour {
                     }
 
                 }
-
+                
                 data.getGhostObject().transform.position = LerpMovement(data);
-
+                
                 data.setLerpTime(data.getLerpTime() + Time.deltaTime * (data.getGhostState() == State.FRIGHTENED ? maxVelocity * 0.5f : maxVelocity));
                 
             }
@@ -571,6 +576,7 @@ public class GhostHivemindMovement : MonoBehaviour {
         foreach (GhostData ghost in ghostMap.Values)
         {
             ghost.getGhostObject().transform.position = ghost.getOriginalPos();
+            
             ghost.setDirection(Direction.Up);
             if (ghost.getExitTime() == 0f)
             {
@@ -583,7 +589,7 @@ public class GhostHivemindMovement : MonoBehaviour {
             currentEndIndex = 0;
             startTime = Time.time;
             startExitTime = Time.time;
-            ghost.setCurrentNode(pathFinder.WorldPosToNodeIncludingGhostHouse(transform.position));
+            ghost.setCurrentNode(pathFinder.WorldPosToNodeIncludingGhostHouse(ghost.getGhostObject().transform.position));
             ghost.setLerpTime(0f);
         }
     }
