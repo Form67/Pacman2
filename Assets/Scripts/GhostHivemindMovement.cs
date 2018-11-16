@@ -146,10 +146,10 @@ public class GhostHivemindMovement : MonoBehaviour {
         if (blinky == null)
             print("blinky?");
 
-        ghostMap.Add("blinky", new GhostData("blinky", blinky, waveStates[0], blinky.GetComponent<Animator>(), pathFinder, 0));
-        ghostMap.Add("inky", new GhostData("inky", inky, waveStates[0], inky.GetComponent<Animator>(), pathFinder, 5));
-        ghostMap.Add("pinky", new GhostData("pinky", pinky, waveStates[0], pinky.GetComponent<Animator>(), pathFinder, 3));
-        ghostMap.Add("clyde", new GhostData("clyde", clyde, waveStates[0], clyde.GetComponent<Animator>(), pathFinder, 10));
+        ghostMap.Add("blinky", new GhostData("blinky", blinky, State.DEFAULT, blinky.GetComponent<Animator>(), pathFinder, 0));
+        ghostMap.Add("inky", new GhostData("inky", inky, State.DEFAULT, inky.GetComponent<Animator>(), pathFinder, 5));
+        ghostMap.Add("pinky", new GhostData("pinky", pinky, State.DEFAULT, pinky.GetComponent<Animator>(), pathFinder, 3));
+        ghostMap.Add("clyde", new GhostData("clyde", clyde, State.DEFAULT, clyde.GetComponent<Animator>(), pathFinder, 10));
 
         pacman = GameObject.FindGameObjectWithTag ("pacman");
 		pacmanNode = pathFinder.WorldPosToNode (pacman.transform.position);
@@ -228,7 +228,7 @@ public class GhostHivemindMovement : MonoBehaviour {
                                 targetPoint = DetermineTargetForChase(data.getName(), data.getRespawn());
 
                             List<Node> currentPath = pathFinder.AStar(data.getCurrentNode(), targetPoint, data.getDirection());
-
+                            
                             data.setDirection(GetDirectionBetweenNodes(data.getCurrentNode(), currentPath[1]));
                             break;
                         case State.FRIGHTENED:
@@ -308,7 +308,7 @@ public class GhostHivemindMovement : MonoBehaviour {
                 {
                     data.setGhostState(waveStates[currentEndIndex]);
                 }
-                else if (Time.time - startTime >= currentEndTime && currentEndIndex < waveEndTimes.Length)
+                if (Time.time - startTime >= currentEndTime && currentEndIndex < waveEndTimes.Length)
                 {
                     currentEndIndex++;
                     currentEndTime = waveEndTimes.Length > currentEndIndex ? waveEndTimes[currentEndIndex] : -1f;
@@ -475,7 +475,7 @@ public class GhostHivemindMovement : MonoBehaviour {
 				pacmanGoalNode = pathFinder.grid[pacmanGoalNode.gridX][0];
 			}
 		}
-		return pacmanGoalNode;
+		return pathFinder.WorldPosToNode(pacmanGoalNode.pos);
 	}
 
 	Node PinkyDetermineTargetForScatter(){
