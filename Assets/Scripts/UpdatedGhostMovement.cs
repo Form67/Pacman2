@@ -85,7 +85,7 @@ public abstract class UpdatedGhostMovement : MonoBehaviour {
             }
         }
         pathFinder = GameObject.FindGameObjectWithTag("pathfinding").GetComponent<PathFinding>();
-        
+        frightenedTime = pacman.GetComponent<MainCharacterMovement>().invDurationPerPellet;
         currentNode = pathFinder.WorldPosToNodeIncludingGhostHouse(transform.position);
     }
 
