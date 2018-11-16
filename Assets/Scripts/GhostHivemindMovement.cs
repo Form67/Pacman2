@@ -171,6 +171,8 @@ public class GhostHivemindMovement : MonoBehaviour {
         
         pacmanNode = pathFinder.WorldPosToNode (pacman.transform.position);
 
+
+
         foreach (GhostData data in ghostMap.Values)
         {
             if (data.getGhostState() != State.DEFAULT)
@@ -179,16 +181,28 @@ public class GhostHivemindMovement : MonoBehaviour {
                 {
                     currentEndIndex++;
                     currentEndTime = waveEndTimes.Length > currentEndIndex ? waveEndTimes[currentEndIndex] : -1f;
-                    data.setGhostState(waveStates[currentEndIndex]);
+                    foreach (GhostData data2 in ghostMap.Values)
+                    {
+                        if(data2.getGhostState() != State.DEFAULT)
+                            data2.setGhostState(waveStates[currentEndIndex]);
+                    }
                     startTime = Time.time;
                 }
                 else if (data.getGhostState() == State.FRIGHTENED)
                 {
                     if (Time.time - startTime >= frightenedTime)
                     {
-                        data.setGhostState(waveStates[currentEndIndex]);
+                        foreach (GhostData data2 in ghostMap.Values) {
+
+                            data2.getGhostAnimator().SetBool("flash", false);
+                            if (data2.getGhostState() != State.DEFAULT)
+                                data2.setGhostState(waveStates[currentEndIndex]);
+                        }
+                            
+                        //data.setGhostState(waveStates[currentEndIndex]);
                         startTime = Time.time;
-                        data.getGhostAnimator().SetBool("flash", false);
+                        
+                        print("frighten end");
                     }
                     // End of state is near
                     else if (frightenedTime - (Time.time - startTime) <= 2f)
