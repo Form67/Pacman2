@@ -300,6 +300,7 @@ public class GhostHivemindMovement : MonoBehaviour {
                 data.getGhostObject().transform.position = LerpMovement(data);
 
                 data.setLerpTime(data.getLerpTime() + Time.deltaTime * (data.getGhostState() == State.FRIGHTENED ? maxVelocity * 0.5f : maxVelocity));
+                
             }
             else
             {
@@ -546,7 +547,7 @@ public class GhostHivemindMovement : MonoBehaviour {
 
         foreach (GhostData otherGhost in ghostMap.Values)
         {
-            if (!otherGhost.getRespawn() && (myNode == otherGhost.getCurrentNode() || frontNode == otherGhost.getCurrentNode()))
+            if (otherGhost != ghost && !otherGhost.getRespawn() && (myNode == otherGhost.getCurrentNode() || frontNode == otherGhost.getCurrentNode()))
             {
                 ghost.setDirection(FlipDirection(myDir));
                 ghost.setLerpTime(0);
