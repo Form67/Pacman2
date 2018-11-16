@@ -131,8 +131,7 @@ public class GhostHivemindMovement : MonoBehaviour {
 
 	// Use this for initialization
 	public void Init () {
-        print("init");
-
+      
         pathFinder = GameObject.FindGameObjectWithTag("pathfinding").GetComponent<PathFinding>();
         ghostMap = new Dictionary<string, GhostData> ();
 
