@@ -153,8 +153,8 @@ public class GhostHivemindMovement : MonoBehaviour {
 
         pacman = GameObject.FindGameObjectWithTag ("pacman");
 		pacmanNode = pathFinder.WorldPosToNode (pacman.transform.position);
-		frightenedTime = pacman.GetComponent<MainCharacterMovement> ().invincibleTimer;
-
+		frightenedTime = pacman.GetComponent<MainCharacterMovement> ().invDurationPerPellet;
+        
 		currentEndTime = waveEndTimes.Length > 0 ? waveEndTimes [0] : -1f;
         currentEndIndex = 0;
 
@@ -179,7 +179,7 @@ public class GhostHivemindMovement : MonoBehaviour {
         {
             if (data.getGhostState() != State.DEFAULT)
             {
-                if (Time.time - startTime >= currentEndTime && currentEndTime != -1f && data.getGhostState() != State.FRIGHTENED && !data.getRespawn())
+                if (Time.time - startTime >= currentEndTime && currentEndIndex < waveEndTimes.Length && currentEndTime != -1f && data.getGhostState() != State.FRIGHTENED && !data.getRespawn())
                 {
                     currentEndIndex++;
                     currentEndTime = waveEndTimes.Length > currentEndIndex ? waveEndTimes[currentEndIndex] : -1f;
