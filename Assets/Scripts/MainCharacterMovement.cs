@@ -55,94 +55,95 @@ public class MainCharacterMovement : MonoBehaviour {
         if (!dead) {
             transform.position = Vector3.Lerp(currentNode.pos, targetNode.pos, lerpCycle);
 
-
-            lerpCycle += Time.deltaTime * velocity;
-            if (targetNode != currentNode) {
-                GetComponent<Animator>().SetBool("Moving", true);
-            }
-            else {
-                GetComponent<Animator>().SetBool("Moving", false);
-            }
-            if (lerpCycle >= 1f) {
-                currentNode = targetNode;
-                lerpCycle = 0;
-                switch (direction) { //next tile movement
-                    case Dir.right:
-                        transform.rotation = Quaternion.Euler(0, 0, 0);
-                        if (!pathFinder.grid[currentNode.gridX][currentNode.gridY + 1].isWall) { 
-                            targetNode = pathFinder.grid[currentNode.gridX][currentNode.gridY+1];
-
-                         }
-                        else {
-                            targetNode = currentNode;
-                            
-                        }
-                        break;
-                    case Dir.up:
-                        transform.rotation = Quaternion.Euler(0, 0, 90);
-                        if (!pathFinder.grid[currentNode.gridX - 1][currentNode.gridY].isWall)
-                            targetNode = pathFinder.grid[currentNode.gridX - 1][currentNode.gridY];
-                        else
-                        {
-                            targetNode = currentNode;
-                        }
-                        break;
-                    case Dir.left:
-                        transform.rotation = Quaternion.Euler(0, 0, 180);
-                        if (!pathFinder.grid[currentNode.gridX][currentNode.gridY - 1].isWall)
-                            targetNode = pathFinder.grid[currentNode.gridX][currentNode.gridY - 1];
-                        else
-                        {
-                            targetNode = currentNode;
-                        }
-                        break;
-                    case Dir.down:
-                        transform.rotation = Quaternion.Euler(0, 0, 270);
-                        if (!pathFinder.grid[currentNode.gridX+1][currentNode.gridY].isWall)
-                            targetNode = pathFinder.grid[currentNode.gridX+1][currentNode.gridY];
-                        else
-                        {
-                            targetNode = currentNode;
-                        }
-                        break;
-                    default:
-                        break;
-                }
-                intersect = (pathFinder.IsNodeIntersection(targetNode));
-            }
-        }
-        // Power pellets
-        if (isInvincible)
-        {
-            invincibleTimer -= Time.deltaTime;
-
-            if (invincibleTimer <= 0)
-            {
-                isInvincible = false;
-                invincibleTimer = 0;
-                ghostScore = 100;
-            }
-        }
-
-
-            if ((Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D)) && !pathFinder.grid[targetNode.gridX][targetNode.gridY+1].isWall)
-            {
-                direction = Dir.right;
-                
-            } 
-            if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W) && !pathFinder.grid[targetNode.gridX-1][targetNode.gridY].isWall)
-            {
-                direction = Dir.up;
-            }
-            if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A) && !pathFinder.grid[targetNode.gridX][targetNode.gridY-1].isWall)
-            {
-                direction = Dir.left;
-            }
-            if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S) && !pathFinder.grid[targetNode.gridX+1][targetNode.gridY].isWall)
-            {
-                direction = Dir.down;
-            }
-        
+        lerpCycle += Time.deltaTime;
+        if (lerpCycle >= 1f) {
+            //update grid
+        }
+        if (isInvincible)
+        {
+            invincibleTimer -= Time.deltaTime;
+
+            if (invincibleTimer <= 0)
+            {
+                isInvincible = false;
+                invincibleTimer = 0;
+                ghostScore = 100;
+            }
+        }
+
+
+
+        /*
+                scoreText.text = "Score: " + score;
+                if (score > highScore) {
+                    highScore = score;
+                    scoreText2.text = scoreText2.text = "Highscore: " + highScore;
+                }
+                if (!dead)
+                {
+                    // Power pellets
+                    if(isInvincible)
+                    {
+                        invincibleTimer -= Time.deltaTime;
+
+                        if (invincibleTimer <= 0)
+                        {
+                            isInvincible = false;
+                            invincibleTimer = 0;
+                            ghostScore = 100;
+                        }
+                    }
+
+                    //input
+                    if (Input.GetKeyDown(KeyCode.R))
+                    {
+                        SceneManager.LoadScene(0);
+                    }
+                    if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
+                    {
+                        direction = -1;
+                        currVelocity = velocity;
+                        transform.rotation = Quaternion.Euler(0, 0, 0);
+                    }
+                    if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
+                    {
+                        direction = 1;
+                        currVelocity = velocity;
+                        transform.rotation = Quaternion.Euler(0, 0, 90);
+                    }
+                    if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
+                    {
+                        direction = -1;
+                        currVelocity = -velocity;
+                        transform.rotation = Quaternion.Euler(0, 0, 180);
+                    }
+                    if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S))
+                    {
+                        direction = 1;
+                        currVelocity = -velocity;
+                        transform.rotation = Quaternion.Euler(0, 0, 270);
+                    }
+
+                    if (Mathf.Abs(GetComponent<Rigidbody2D>().velocity.x) < .1f && Mathf.Abs(GetComponent<Rigidbody2D>().velocity.y) < .1f)
+                    {
+                        GetComponent<Animator>().SetBool("Moving", false);
+                    }
+                    else
+                    {
+                        GetComponent<Animator>().SetBool("Moving", true);
+                    }
+                    if (currVelocity != 0)
+                    {
+                        if (direction < 0)
+                            GetComponent<Rigidbody2D>().velocity = new Vector3(currVelocity, 0, 0);
+                        else
+                            GetComponent<Rigidbody2D>().velocity = new Vector3(0, currVelocity, 0);
+                    }
+                    else
+                    {
+                        GetComponent<Animator>().SetBool("Moving", false);
+                    }
+                }*/
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
